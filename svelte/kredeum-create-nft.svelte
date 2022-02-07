@@ -16,6 +16,7 @@
   export let collection: Collection = undefined;
 
   let nftTitle: string;
+  let nftDescription: string;  
 
   let files: FileList;
   let image: string;
@@ -62,7 +63,7 @@
       if (ipfsImage) {
         minting = 2;
 
-        ipfsJson = await nftMint2IpfsJson(nftTitle, ipfsImage, $owner, image);
+        ipfsJson = await nftMint2IpfsJson(nftTitle, nftDescription, ipfsImage, $owner, image);
         // console.log("json", ipfsJson);
 
         if (ipfsJson) {
@@ -206,6 +207,12 @@
           <span class="label label-big">NFT title</span>
           <div class="form-field">
             <input type="text" placeholder="My NFT title" bind:value={nftTitle} id="title-nft" />
+          </div>
+        </div>
+        <div class="section">
+          <span class="label label-big">NFT description</span>
+          <div class="form-field">
+            <input type="text" placeholder="My NFT description" bind:value={nftDescription} id="description-nft" />
           </div>
         </div>
 

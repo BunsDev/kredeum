@@ -7,6 +7,7 @@ import { collectionGetNFTsFactory, NFTsFactory } from "./kcollection-get";
 const collectionCloneResponse = async (
   chainId: number,
   _name: string,
+  _symbol: string,  
   _cloner: Signer
 ): Promise<TransactionResponse | undefined> => {
   // console.log("collectionCloneResponse", chainId, await _cloner.getAddress());
@@ -19,8 +20,9 @@ const collectionCloneResponse = async (
   if (nftsFactory) {
     const n: string = (await nftsFactory.implementationsCount()).toString();
     const name = _name || `Open NFTs #${n}`;
+    const symbol = _symbol || `NFT${n}`;
 
-    txResp = await nftsFactory.connect(_cloner).clone(name, `NFT${n}`);
+    txResp = await nftsFactory.connect(_cloner).clone(name, symbol);
     console.log(`${network?.blockExplorerUrls[0]}/tx/${txResp.hash}`);
   }
 
@@ -48,8 +50,8 @@ const collectionCloneAddress = (txReceipt: TransactionReceipt): string => {
   return implementation;
 };
 
-const collectionClone = async (chainId: number, _name: string, _cloner: Signer): Promise<string> => {
-  const txResp = await collectionCloneResponse(chainId, _name, _cloner);
+const collectionClone = async (chainId: number, _name: string, _symbol: string, _cloner: Signer): Promise<string> => {
+  const txResp = await collectionCloneResponse(chainId, _name, _symbol, _cloner);
   let address = "";
   if (txResp) {
     const txReceipt = await collectionCloneReceipt(txResp);
