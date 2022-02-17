@@ -111,9 +111,7 @@ const nftUrl = (nft: Nft, n?: number): string => nftUrl3(nft.chainId, nft.collec
 // CONSTANT
 const ipfsGateway = "https://ipfs.io/ipfs/";
 
-const textShort = (s: string, n = 16, p = n): string => {
-  const ipfsStr: string = s?.toString() || "";
-  const str: string = ipfsLinkToCid(ipfsStr);
+const textShort = (str: string, n = 16, p = n): string => {
   const l: number = str.length || 0;
   return str.substring(0, n) + (l < n ? "" : "..." + (p > 0 ? str.substring(l - p, l) : ""));
 };

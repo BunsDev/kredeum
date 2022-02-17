@@ -146,15 +146,15 @@
         </li>
 
         <li class="complete">
-          <div class="flex"><span class="label">Metadata IPFS</span></div>
+          <div class="flex"><span class="label">Metadata</span></div>
           <div class="flex">
-            <a class="link" href={nft.tokenURI} target="_blank">{textShort(nft.ipfsJson)}</a>
+            <a class="link" href={nft.tokenURI} target="_blank">{textShort(nft.tokenURI)}</a>
           </div>
         </li>
         <li class="complete">
-          <div class="flex"><span class="label">Image IPFS</span></div>
+          <div class="flex"><span class="label">Image</span></div>
           <div class="flex">
-            <a class="link" href={nft.image} target="_blank">{textShort(nft.ipfs)}</a>
+            <a class="link" href={nft.image} target="_blank">{textShort(nft.image)}</a>
           </div>
         </li>
         {#if platform === "wordpress"}
