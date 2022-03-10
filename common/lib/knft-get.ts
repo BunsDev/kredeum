@@ -56,67 +56,65 @@ const nftGetContentType = async (nft: Nft): Promise<string> => {
 
 const nftGetImageLink = (nft: Nft): string => (nft?.ipfs ? ipfsGatewayUrl(nft.ipfs) : nft?.image || "");
 
-const nftGetMetadata = async (chainId: number, token: Nft, collection?: Collection): Promise<Nft | undefined> => {
+const nftGetMetadata = async (chainId: number, token: Nft, collection?: Collection): Promise<Nft> => {
   // console.log("nftGetMetadata", chainId, token, collection);
-  // TODO : Extend NFT type with Metadata type...
-  let nftMetadata: Nft | undefined;
+  if (chainId < 0 || !token) throw `ERROR nftGetMetadata: Invalid chainId '${chainId}' or token '${token}'`;
 
-  if (chainId && token) {
-    const network = getNetwork(chainId);
-    const collectionAddress: string = getChecksumAddress(token.collection || collection?.address || "");
+  const network = getNetwork(chainId);
+  const collectionAddress: string = getChecksumAddress(token.collection || collection?.address || "");
 
-    let tokenJson: NftMetadata = {};
+  let tokenJson: NftMetadata = {};
 
-    // ERC721 OPTIONAL METADATA => tokenURI includes METADATA
-    if (token.tokenURI) {
-      try {
-        const tokenURIAnswer = await fetchJson(token.tokenURI);
-        if (tokenURIAnswer.error) {
-          console.error("ERROR nftGetMetadata tokenURIAnswer.error ", tokenURIAnswer.error);
-        } else {
-          // console.log("nftGetMetadata tokenJson", tokenURIAnswer);
-          tokenJson = tokenURIAnswer as NftMetadata;
-        }
-      } catch (e) {
-        console.error("ERROR nftGetMetadata tokenURIAnswer", e);
+  // ERC721 OPTIONAL METADATA => tokenURI includes METADATA
+  if (token.tokenURI) {
+    try {
+      const tokenURIAnswer = await fetchJson(token.tokenURI);
+      if (tokenURIAnswer.error) {
+        console.error("ERROR nftGetMetadata tokenURIAnswer.error ", tokenURIAnswer.error);
+      } else {
+        // console.log("nftGetMetadata tokenJson", tokenURIAnswer);
+        tokenJson = tokenURIAnswer as NftMetadata;
       }
-    }
-
-    const chainName: string = token.chainName || network?.chainName || "";
-    const metadata = { ...token.metadata, ...tokenJson };
-    const image: string = token.image || metadata.image || metadata.image_url || "";
-    const tokenID: string = token.tokenID || "";
-
-    nftMetadata = {
-      tokenID: token.tokenID || "",
-      tokenURI: token.tokenURI || "",
-      tokenJson,
-
-      collection: collectionAddress,
-      chainId,
-      chainName,
-
-      metadata,
-      image,
-
-      name: token.name || metadata.name || "",
-      description: token.description || metadata.description || "",
-
-      creator: getChecksumAddress(token.creator || metadata.creator),
-      minter: getChecksumAddress(token.minter || metadata.minter),
-      owner: getChecksumAddress(token.owner || metadata.owner),
-
-      ipfs: token.ipfs || metadata.ipfs || ipfsGetLink(image) || "",
-      ipfsJson: token.ipfsJson || ipfsGetLink(token.tokenURI) || "",
-      nid: token.nid || nftUrl3(chainId, collectionAddress, tokenID)
-    };
-    nftMetadata.contentType = token.contentType || (await nftGetContentType(nftMetadata));
-
-    // STORE in cache if exists
-    if (typeof localStorage !== "undefined") {
-      localStorage.setItem(nftMetadata.nid || "", JSON.stringify(nftMetadata, null, 2));
+    } catch (e) {
+      console.error("ERROR nftGetMetadata tokenURIAnswer", e);
     }
   }
+
+  const chainName: string = token.chainName || network?.chainName || "";
+  const metadata = { ...token.metadata, ...tokenJson };
+  const image: string = token.image || metadata.image || metadata.image_url || "";
+  const tokenID: string = token.tokenID || "";
+
+  const nftMetadata: Nft = {
+    tokenID: token.tokenID || "",
+    tokenURI: token.tokenURI || "",
+    tokenJson,
+
+    collection: collectionAddress,
+    chainId,
+    chainName,
+
+    metadata,
+    image,
+
+    name: token.name || metadata.name || "",
+    description: token.description || metadata.description || "",
+
+    creator: getChecksumAddress(token.creator || metadata.creator),
+    minter: getChecksumAddress(token.minter || metadata.minter),
+    owner: getChecksumAddress(token.owner || metadata.owner),
+
+    ipfs: token.ipfs || metadata.ipfs || ipfsGetLink(image) || "",
+    ipfsJson: token.ipfsJson || ipfsGetLink(token.tokenURI) || "",
+    nid: token.nid || nftUrl3(chainId, collectionAddress, tokenID)
+  };
+  nftMetadata.contentType = token.contentType || (await nftGetContentType(nftMetadata));
+
+  // STORE in cache if possible
+  if (typeof localStorage !== "undefined") {
+    localStorage.setItem(nftMetadata.nid || "", JSON.stringify(nftMetadata, null, 2));
+  }
+
   // console.log("nftGetMetadata nftMetadata", nftMetadata);
   return nftMetadata;
 };
@@ -127,37 +125,37 @@ const nftGetFromContract = async (
   tokenID: string,
   provider: Provider,
   owner = ""
-): Promise<Nft | undefined> => {
+): Promise<Nft> => {
   let tokenURI = "";
   let contractName = "";
 
-  let nft: Nft | undefined;
+  if (chainId < 0 || !collection)
+    throw `ERROR nftGetMetadata: Invalid chainId '${chainId}' or collection '${collection}'`;
 
-  if (chainId && collection) {
-    try {
-      const contract = await collectionGetContract(chainId, collection, provider);
-      contractName = collection.name || "No name";
+  try {
+    const contract = await collectionGetContract(chainId, collection, provider);
+    contractName = collection.name || "No name";
 
-      if (contract && collection?.supports?.IERC721Metadata) {
-        contractName = contractName || (await contract.name());
-        owner = owner || (await contract.ownerOf(tokenID));
-        tokenURI = await contract.tokenURI(tokenID);
-      }
-
-      const nid = nftUrl3(chainId, collection.address, tokenID);
-      nft = {
-        chainId,
-        collection: collection.address,
-        contractName,
-        tokenID,
-        tokenURI,
-        owner,
-        nid
-      };
-    } catch (e) {
-      console.error("ERROR nftGetFromContract", e);
+    if (contract && collection?.supports?.IERC721Metadata) {
+      contractName = contractName || (await contract.name());
+      owner = owner || (await contract.ownerOf(tokenID));
+      tokenURI = await contract.tokenURI(tokenID);
     }
+  } catch (e) {
+    console.error("ERROR nftGetFromContract", e);
   }
+
+  const nid = nftUrl3(chainId, collection.address, tokenID);
+  const nft: Nft = {
+    chainId,
+    collection: collection.address,
+    contractName,
+    tokenID,
+    tokenURI,
+    owner,
+    nid
+  };
+
   // console.log("nftGetFromContract", nft);
   return nft;
 };
@@ -173,23 +171,27 @@ const nftGetFromContractEnumerable = async (
   let tokID: BigNumber;
 
   // console.log("nftGetFromContractEnumerable", chainId, index, collection.address, owner);
+  if (chainId < 0 || !collection)
+    throw `ERROR nftGetMetadata: Invalid chainId '${chainId}' or collection  '${collection}'`;
 
-  if (chainId && collection?.supports?.IERC721Enumerable) {
-    try {
-      const contract = await collectionGetContract(chainId, collection, provider);
-      if (contract) {
-        if (owner) {
-          tokID = await contract.tokenOfOwnerByIndex(owner, index);
-        } else {
-          tokID = await contract.tokenByIndex(index);
-          owner = await contract.ownerOf(tokID);
-        }
-        nft = await nftGetFromContract(chainId, collection, tokID.toString(), provider, owner);
+  if (!collection?.supports?.IERC721Enumerable)
+    throw `ERROR nftGetMetadata: Collection not Enumerable !collection '${collection}'`;
+
+  try {
+    const contract = await collectionGetContract(chainId, collection, provider);
+    if (contract) {
+      if (owner) {
+        tokID = await contract.tokenOfOwnerByIndex(owner, index);
+      } else {
+        tokID = await contract.tokenByIndex(index);
+        owner = await contract.ownerOf(tokID);
       }
-    } catch (e) {
-      console.error("ERROR nftGetFromContractEnumerable", chainId, index, owner, collection, e);
+      nft = await nftGetFromContract(chainId, collection, tokID.toString(), provider, owner);
     }
+  } catch (e) {
+    console.error("ERROR nftGetFromContractEnumerable", chainId, index, owner, collection, e);
   }
+
   // console.log("nftGetFromContractEnumerable #", index, nft);
   return nft;
 };
