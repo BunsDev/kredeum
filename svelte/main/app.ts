@@ -6,7 +6,7 @@ import Home from "../components/Global/Home.svelte";
 import NftMintButton from "../components/Nft/NftMintButton.svelte";
 import NetworkList from "../components/Network/NetworkList.svelte";
 import CollectionChoice from "../components/Collection/CollectionChoice.svelte";
-import KredeumWpFront from "../components/wpfront/kredeum-wp-front.svelte";
+import WpFrontEntryPoint from "../components/wpfront/WpFrontEntryPoint.svelte";
 
 type Props = Record<string, string>;
 type Attr = { name: string; value: string };
@@ -65,7 +65,7 @@ let kredeumCollectionList: CollectionChoice;
   }
 }
 
-let kredeumWpFront: KredeumWpFront;
+let wpFrontEntryPoint: WpFrontEntryPoint;
 
 // Convert "chainid" in "chainId" & "tokenid" in "tokenID"
 const _propsUpCase = (lowCaseProps: object) => {
@@ -89,11 +89,12 @@ const _propsUpCase = (lowCaseProps: object) => {
 
   if (target) {
     const wpProps: object = JSON.parse(target.dataset.props);
-    console.log(target.dataset.props);
+    console.log(_propsUpCase(wpProps));
 
-    kredeumWpFront = new KredeumWpFront({ target, props: { props: _propsUpCase(wpProps) } });
+    wpFrontEntryPoint = new WpFrontEntryPoint({ target, props: {"props": _propsUpCase(wpProps)} });
   }
 }
+
 let network: NetworkList;
 {
   // Kredeum Metamask component
@@ -103,4 +104,4 @@ let network: NetworkList;
   }
 }
 
-export { kredeumHome, kredeumWpFront, kredeumMintButton, kredeumCollectionList, network };
+export { kredeumHome, kredeumMintButton, kredeumCollectionList, wpFrontEntryPoint, network };

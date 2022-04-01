@@ -2,7 +2,7 @@
   import type { Collection } from "lib/ktypes";
   import { collectionGet } from "../../../common/lib/kcollection-get";
 
-  import KredeumShortcodeView from "../views/shortcodeView.svelte";
+  import KredeumShortcodeView from "./WpFrontEntryPoint.svelte";
 
   import KredeumCreateCollection from "../kredeum-create-collection.svelte";
   import KredeumCreateNft from "../kredeum-create-nft.svelte";

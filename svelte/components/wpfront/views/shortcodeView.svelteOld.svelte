@@ -27,7 +27,7 @@
 
   import { chainId, network, owner, signer } from "main/network";
 
-  import TransferNft from "../kredeum-transfer-nft.svelte";
+  import TransferNft from "../../kredeum-transfer-nft.svelte";
   //////////////////////////////
 
   export let collection: Collection = undefined;
@@ -312,7 +312,7 @@
           class="info-button"
           href={nftGetImageLink(nft)}
           title="&#009;{nftDescription(nft)} 
-                NFT address (click to view in explorer)&#013.{nftUrl(nft)}"
+                  NFT address (click to view in explorer)&#013.{nftUrl(nft)}"
           target="_blank"><i class="fas fa-info-circle" /></a
         >
       </div>
@@ -333,7 +333,7 @@
             class="info-button"
             href={nftGetImageLink(nft)}
             title="&#009;{nftDescription(nft)} 
-                  NFT address (click to view explorer)&#013.{nftUrl(nft)}"
+                    NFT address (click to view explorer)&#013.{nftUrl(nft)}"
             target="_blank"><i class="fas fa-info-circle" /></a
           >
         {/if}

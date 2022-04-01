@@ -67,6 +67,7 @@ add_shortcode(
 				'chainid'    => '',
 				'collection' => '',
 				'tokenid'    => '',
+				'account'    => '',
 				'cid'        => '',
 				'image'      => '',
 			),
