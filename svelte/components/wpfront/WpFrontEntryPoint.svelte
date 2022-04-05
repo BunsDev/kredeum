@@ -32,7 +32,7 @@
   import ShortcodeLayout from "./views/ShortcodeLayout.svelte";
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  import { nftGet, nftGetFromContract } from "lib/knft-get";
+  import { nftGet, nftGetFromContract, nftGetFromContractEnumerable } from "lib/knft-get";
   import { nftGetMetadata } from "lib/knft-get-metadata";
   // import { collectionGet } from "lib/kcollection-get";
   // // import NftDetail from "./NftDetail.svelte";
@@ -60,11 +60,12 @@
 
   // $: account = $metamaskAccount;
 
+  $: wpNftGet(chainId, collection, tokenID, $metamaskProvider);
   $: nft;
-  // $: wpNftGet(chainId, collection, tokenID, $metamaskProvider);
 
-  const _nftSet = (_nft: Nft): void => {
+  const _nftSet = async (_nft: Nft): Promise<void> => {
     nft = _nft;
+    console.log("🚀 ~ file: WpFrontEntryPoint.svelte ~ line 60 ~ nft", nft);
   };
 
   const wpNftGet = async (
@@ -77,9 +78,14 @@
 
     console.log("🚀 ~ file: WpFrontEntryPoint.svelte ~ line 63 ~ $_metamaskProvider", _metamaskProvider);
     // _nftSet(await nftGet(chainId, collection, tokenID));
-    _nftSet(
+    await _nftSet(
       await nftGetMetadata(
-        await nftGetFromContract(chainId, { chainId, address: collection }, tokenID, _metamaskProvider)
+        await nftGetFromContractEnumerable(
+          chainId,
+          { chainId, address: collection },
+          Number(tokenID),
+          _metamaskProvider
+        )
       )
     );
   };
@@ -88,7 +94,7 @@
     await wpMetamaskInit();
     wpMetamaskConnect();
     wpMetamaskSwitchChain(chainId);
-    wpNftGet(chainId, collection, tokenID, metamaskProvider);
+    await wpNftGet(chainId, collection, tokenID, $metamaskProvider);
   });
 </script>
 
@@ -132,7 +138,7 @@
       {#if nft}
         <div class="table">
           <!-- <NftGet {chainId} {collection} {tokenID} /> -->
-          <NftSolo {nft} />
+          <NftSolo bind:nft />
         </div>
       {:else}
         <!-- <NftsList {chainId} {collection} {account} bind:refreshing bind:nftsList {platform} /> -->
