@@ -41,6 +41,12 @@
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  import { nfts, isLoading, error, isAddingNft, errorAddingNft } from "./store/nftStore";
+  import { fetchNfts } from "./store/nftService";
+  import { Writable } from "svelte/store";
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   export let props;
 
   let platform: string = "wordpress";
@@ -52,34 +58,39 @@
   let refreshing: boolean;
   let refresh: number;
 
-  let nft: Nft;
+  let nft: any;
 
-  $: wpNftGet(chainId, collection, tokenID, $metamaskProvider);
+  $: nft = nfts;
 
-  const _nftSet = async (_nft: Nft): Promise<void> => {
-    nft = _nft;
-    console.log("🚀 ~ file: WpFrontEntryPoint.svelte ~ line 60 ~ nft", nft);
-  };
+  $: displayError = JSON.stringify($error);
 
-  const wpNftGet = async (
-    _chainId: number,
-    _collection: string,
-    _tokenID: string,
-    _metamaskProvider
-  ): Promise<void> => {
-    _nftSet(
-      await nftGetMetadata(
-        await nftGetFromContract(
-          chainId,
-          await collectionGet(_chainId, _collection, _metamaskProvider),
-          tokenID,
-          _metamaskProvider
-        )
-      )
-    );
-  };
+  // $: wpNftGet(chainId, collection, tokenID, $metamaskProvider);
+
+  // const _nftSet = async (_nft: Nft): Promise<void> => {
+  //   nft = _nft;
+  //   console.log("🚀 ~ file: WpFrontEntryPoint.svelte ~ line 60 ~ nft", nft);
+  // };
+
+  // const wpNftGet = async (
+  //   _chainId: number,
+  //   _collection: string,
+  //   _tokenID: string,
+  //   _metamaskProvider
+  // ): Promise<void> => {
+  //   _nftSet(
+  //     await nftGetMetadata(
+  //       await nftGetFromContract(
+  //         chainId,
+  //         await collectionGet(_chainId, _collection, _metamaskProvider),
+  //         tokenID,
+  //         _metamaskProvider
+  //       )
+  //     )
+  //   );
+  // };
 
   onMount(async () => {
+    fetchNfts(chainId, collection, tokenID, $metamaskProvider);
     // await wpMetamaskInit();
     // wpMetamaskConnect();
     // wpMetamaskSwitchChain(chainId);
