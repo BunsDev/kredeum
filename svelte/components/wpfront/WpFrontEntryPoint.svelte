@@ -15,11 +15,11 @@
   import Metamask from "../Tests/Metamask.svelte";
   // import { metamaskAccount } from "main/metamaskWp";
 
-  // import AccountConnect from "../Account/AccountConnect.svelte";
+  import AccountConnect from "../Account/AccountConnect.svelte";
   // import NetworkList from "../Network/NetworkList.svelte";
   // import CollectionListGet from "./CollectionList/CollectionListGet.svelte";
 
-  // import Create from "./Global/Create.svelte";
+  import Create from "../Global/Create.svelte";
   // import Navigation from "./Global/Navigation.svelte";
 
   import NftGet from "../Nft/NftGet.svelte";
@@ -39,11 +39,13 @@
   // // import NftDetail from "./NftDetail.svelte";
   import { metamaskProvider } from "main/metamask";
 
+  import { metamaskSigner } from "main/metamask";
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  import { nfts, isLoading, error, isAddingNft, errorAddingNft } from "./store/nftStore";
-  import { fetchNfts } from "./store/nftService";
-  import { Writable } from "svelte/store";
+  // import { nfts, isLoading, error, isAddingNft, errorAddingNft } from "./store/nftStore";
+  // import { fetchNfts } from "./store/nftService";
+  // import { Writable } from "svelte/store";
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -58,39 +60,41 @@
   let refreshing: boolean;
   let refresh: number;
 
-  let nft: any;
+  let nft: Nft;
 
-  $: nft = nfts;
+  // $: nft = nfts;
 
-  $: displayError = JSON.stringify($error);
+  // $: displayError = JSON.stringify($error);
 
-  // $: wpNftGet(chainId, collection, tokenID, $metamaskProvider);
+  $: wpNftGet(chainId, collection, tokenID, $metamaskProvider);
 
-  // const _nftSet = async (_nft: Nft): Promise<void> => {
-  //   nft = _nft;
-  //   console.log("🚀 ~ file: WpFrontEntryPoint.svelte ~ line 60 ~ nft", nft);
-  // };
+  const _nftSet = async (_nft: Nft): Promise<void> => {
+    nft = _nft;
+    console.log("🚀 ~ file: WpFrontEntryPoint.svelte ~ line 60 ~ nft", nft);
+  };
 
-  // const wpNftGet = async (
-  //   _chainId: number,
-  //   _collection: string,
-  //   _tokenID: string,
-  //   _metamaskProvider
-  // ): Promise<void> => {
-  //   _nftSet(
-  //     await nftGetMetadata(
-  //       await nftGetFromContract(
-  //         chainId,
-  //         await collectionGet(_chainId, _collection, _metamaskProvider),
-  //         tokenID,
-  //         _metamaskProvider
-  //       )
-  //     )
-  //   );
-  // };
+  const wpNftGet = async (
+    _chainId: number,
+    _collection: string,
+    _tokenID: string,
+    _metamaskProvider
+  ): Promise<void> => {
+    if (_metamaskProvider) {
+      _nftSet(
+        await nftGetMetadata(
+          await nftGetFromContract(
+            chainId,
+            await collectionGet(_chainId, _collection, _metamaskProvider),
+            tokenID,
+            _metamaskProvider
+          )
+        )
+      );
+    }
+  };
 
   onMount(async () => {
-    fetchNfts(chainId, collection, tokenID, $metamaskProvider);
+    // fetchNfts(chainId, collection, tokenID, $metamaskProvider);
     // await wpMetamaskInit();
     // wpMetamaskConnect();
     // wpMetamaskSwitchChain(chainId);
@@ -108,7 +112,7 @@
     <!-- <Title /> -->
 
     {#if account && getCreate(chainId)}
-      <!-- <Create {chainId} /> -->
+      <Create {chainId} />
     {/if}
 
     <!-- <BreadCrumb display={true} /> -->
