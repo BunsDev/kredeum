@@ -1,4 +1,4 @@
-import type { Nft as NftType } from "../../../../common/lib/ktypes";
+// import type { Nft as NftType } from "../../../../common/lib/ktypes";
 
 import { endpoint, nfts, requestNfts, receiveNftsSuccess, receiveNftsError, requestAddNft, receiveAddNftSuccess, receiveAddNftError } from './nftStore';
 
@@ -12,14 +12,15 @@ const createFlash = window.alert;
 export const fetchNfts = (chainId, collection, tokenID, metamaskProvider) => {
     requestNfts();
 
-    return collectionGet(chainId, collection, metamaskProvider)
-            .then( (collectionMetadata) => nftGetFromContract(chainId, collectionMetadata, tokenID, metamaskProvider))
-            .then( (nft) => nftGetMetadata(nft))
+    return (collectionGet(chainId, collection, metamaskProvider)
+            .then( (collectionMetadata) => nftGetFromContract(chainId, collectionMetadata, tokenID, metamaskProvider)
+            .then( (nft) => nftGetMetadata(nft)
             .then( (nftWMetadatas) =>receiveNftsSuccess(nftWMetadatas))
             .catch((error) => {
                 receiveNftsError(error)
                 createFlash('There was an error getting nft')
-            });
+            })
+            )));
     
 
     

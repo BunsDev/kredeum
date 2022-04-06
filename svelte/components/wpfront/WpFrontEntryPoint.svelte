@@ -16,8 +16,8 @@
   // import { metamaskAccount } from "main/metamaskWp";
 
   import AccountConnect from "../Account/AccountConnect.svelte";
-  // import NetworkList from "../Network/NetworkList.svelte";
-  // import CollectionListGet from "./CollectionList/CollectionListGet.svelte";
+  import NetworkList from "../Network/NetworkList.svelte";
+  import CollectionListGet from "../CollectionList/CollectionListGet.svelte";
 
   import Create from "../Global/Create.svelte";
   // import Navigation from "./Global/Navigation.svelte";
@@ -43,9 +43,9 @@
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // import { nfts, isLoading, error, isAddingNft, errorAddingNft } from "./store/nftStore";
-  // import { fetchNfts } from "./store/nftService";
-  // import { Writable } from "svelte/store";
+  import { nfts, isLoading, error, isAddingNft, errorAddingNft } from "./store/nftStore";
+  import { fetchNfts } from "./store/nftService";
+  import { Writable } from "svelte/store";
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -60,38 +60,47 @@
   let refreshing: boolean;
   let refresh: number;
 
-  let nft: Nft;
+  // let nft: Nft;
+  let nft;
 
-  // $: nft = nfts;
+  // $: nft = $nfts?.[0];
 
-  // $: displayError = JSON.stringify($error);
+  nfts.subscribe((value) => {
+    nft = value ? value : null;
+  });
 
-  $: wpNftGet(chainId, collection, tokenID, $metamaskProvider);
+  $: console.log("NFT from store", nft);
 
-  const _nftSet = async (_nft: Nft): Promise<void> => {
-    nft = _nft;
-    console.log("🚀 ~ file: WpFrontEntryPoint.svelte ~ line 60 ~ nft", nft);
-  };
+  $: displayError = JSON.stringify($error);
 
-  const wpNftGet = async (
-    _chainId: number,
-    _collection: string,
-    _tokenID: string,
-    _metamaskProvider
-  ): Promise<void> => {
-    if (_metamaskProvider) {
-      _nftSet(
-        await nftGetMetadata(
-          await nftGetFromContract(
-            chainId,
-            await collectionGet(_chainId, _collection, _metamaskProvider),
-            tokenID,
-            _metamaskProvider
-          )
-        )
-      );
-    }
-  };
+  $: fetchNfts(chainId, collection, tokenID, $metamaskProvider);
+
+  // $: wpNftGet(chainId, collection, tokenID, $metamaskProvider);
+
+  // const _nftSet = async (_nft: Nft): Promise<void> => {
+  //   nft = _nft;
+  //   console.log("🚀 ~ file: WpFrontEntryPoint.svelte ~ line 60 ~ nft", nft);
+  // };
+
+  // const wpNftGet = async (
+  //   _chainId: number,
+  //   _collection: string,
+  //   _tokenID: string,
+  //   _metamaskProvider
+  // ): Promise<void> => {
+  //   if (_metamaskProvider) {
+  //     _nftSet(
+  //       await nftGetMetadata(
+  //         await nftGetFromContract(
+  //           chainId,
+  //           await collectionGet(_chainId, _collection, _metamaskProvider),
+  //           tokenID,
+  //           _metamaskProvider
+  //         )
+  //       )
+  //     );
+  //   }
+  // };
 
   onMount(async () => {
     // fetchNfts(chainId, collection, tokenID, $metamaskProvider);
@@ -122,11 +131,11 @@
       <!-- <AccountConnect bind:account /> -->
 
       <!-- Select network -->
-      <!-- <NetworkList bind:chainId /> -->
+      <NetworkList bind:chainId />
 
       <!-- Select collection -->
       {#if chainId && account}
-        <!-- <CollectionListGet {chainId} {account} bind:collection /> -->
+        <CollectionListGet {chainId} {account} bind:collection />
 
         {#if account && collection && factoryGetAddress(chainId)}
           <!-- Refresh button -->
