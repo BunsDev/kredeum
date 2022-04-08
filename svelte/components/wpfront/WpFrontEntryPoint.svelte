@@ -63,7 +63,7 @@
   // let nft: Nft;
   let nft;
 
-  // $: nft = $nfts?.[0];
+  // $: nft = $nfts;
 
   nfts.subscribe((value) => {
     nft = value ? value : null;
@@ -131,11 +131,11 @@
       <!-- <AccountConnect bind:account /> -->
 
       <!-- Select network -->
-      <NetworkList bind:chainId />
+      <!-- <NetworkList bind:chainId /> -->
 
       <!-- Select collection -->
       {#if chainId && account}
-        <CollectionListGet {chainId} {account} bind:collection />
+        <!-- <CollectionListGet {chainId} {account} bind:collection /> -->
 
         {#if account && collection && factoryGetAddress(chainId)}
           <!-- Refresh button -->
