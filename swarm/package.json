@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Package using bee-js",
   "main": "index.js",
+  "directories": {
+    "swarm": "swarm"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

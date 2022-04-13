@@ -49,6 +49,10 @@
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  import { Bee } from "swarm/@ethersphere/bee-js";
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   export let props;
 
   let platform: string = "wordpress";
@@ -74,6 +78,8 @@
   $: displayError = JSON.stringify($error);
 
   $: fetchNfts(chainId, collection, tokenID, $metamaskProvider);
+
+  const bee = new Bee("http://localhost:1633");
 
   // $: wpNftGet(chainId, collection, tokenID, $metamaskProvider);
 
@@ -103,6 +109,13 @@
   // };
 
   onMount(async () => {
+    // const result = await bee.uploadData(
+    //   "a2fae7a4314c63436d2a575296afe35496bdaa12141c2b73e068c2d175c6ad7c",
+    //   "Bee is awesome!"
+    // );
+    // console.log("data upload reference", result.reference);
+    // const retrievedData = await bee.downloadData(result.reference);
+    // console.log("I really hope that", retrievedData.text()); // prints 'Bee is awesome!'
     // fetchNfts(chainId, collection, tokenID, $metamaskProvider);
     // await wpMetamaskInit();
     // wpMetamaskConnect();

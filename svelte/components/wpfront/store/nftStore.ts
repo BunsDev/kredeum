@@ -38,9 +38,9 @@ export const receiveAddNftError = (error) => {
   errorAddingNft.set(error)
 }
 
-export const nftsMap = derived(nfts, ($nfts) =>
-  $nfts.reduce((map, nft) => {
-    map[nft] = nft;
-    return map;
-  }, {})
-);
+// export const nftsMap = derived(nfts, ($nfts) =>
+//   $nfts.reduce((map, nft) => {
+//     map[nft] = nft;
+//     return map;
+//   }, {})
+// );

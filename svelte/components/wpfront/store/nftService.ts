@@ -1,6 +1,6 @@
 // import type { Nft as NftType } from "../../../../common/lib/ktypes";
 
-import { endpoint, nfts, requestNfts, receiveNftsSuccess, receiveNftsError, requestAddNft, receiveAddNftSuccess, receiveAddNftError } from './nftStore';
+import { nfts, requestNfts, receiveNftsSuccess, receiveNftsError, requestAddNft, receiveAddNftSuccess, receiveAddNftError } from './nftStore';
 
 import { nftGetFromContract } from "../../../../common/lib/knft-get";
 import { nftGetMetadata } from "../../../../common/lib/knft-get-metadata";
