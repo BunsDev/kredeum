@@ -79,7 +79,7 @@
 
   $: fetchNfts(chainId, collection, tokenID, $metamaskProvider);
 
-  const bee = new Bee("http://localhost:1633");
+  // const bee = new Bee("http://localhost:1633");
 
   // $: wpNftGet(chainId, collection, tokenID, $metamaskProvider);
 

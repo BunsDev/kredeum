@@ -1,4 +1,4 @@
-import { Bee } from "./node_modules/@ethersphere/bee-js";
+import { Bee } from "@ethersphere/bee-js";
 
 const bee = new Bee('http://localhost:1633');
 
