@@ -1,13 +1,106 @@
 <script lang="ts">
-  import { testBeeJS } from "./testbeejs";
+  import type { Data, FileData } from "@ethersphere/bee-js";
 
-  testBeeJS();
+  import { onMount } from "svelte";
+  import { text } from "svelte/internal";
+
+  import {
+    testBeeJS,
+    testDownloadData,
+    testUploadFile,
+    testDownloadFile,
+  } from "./testbeejs";
 
   export let name: string;
+
+  let dataReference: string =
+    "fd79d5e0ebd8407e422f53ce1d7c4c41ebf403be55143900f8d1490560294780";
+  let fileReference: string =
+    "d7e9c173ec0bc5ab995752482c9ae42d1141218acfa4979013fe2874d30872aa";
+  let uploadedFileReference: string =
+    //"64a85b2b6f8b03a56ccb2027bd06b3c7b06fe7ebb6057e23913fb7361b85e920"
+    "4bb2be44bb5b1b42dce4fe7fdd967e3b09ea20f874dd233cf98f4ba6f11865a4";
+
+  let swarmData: FileData<Data>;
+
+  let files: FileList;
+  let imagePath;
+  let image = new Image(300, 200);
+
+  let uploadedRef;
+
+  // testBeeJS();
+
+  onMount(async () => {
+    swarmData = await testDownloadFile(uploadedFileReference);
+    // swarmData = await testDownloadData(dataReference);
+  });
+
+  $: if (swarmData)
+    console.log(
+      "🚀 ~ file: App.svelte ~ line 21 ~ onMount ~ swarmData",
+      swarmData
+    );
+
+  $: if (swarmData && swarmData.data) {
+    // image.src = `data:image/jpeg;base64,${btoa(swarmData.data.text())}`;
+    image.src = URL.createObjectURL(
+      new Blob([swarmData.data.buffer], { type: "image/jpeg" })
+    );
+    console.log("🚀 ~ file: App.svelte ~ line 33 ~ image", image);
+  }
+
+  const hexToBase64 = (str) => {
+    return btoa(
+      String.fromCharCode.apply(
+        null,
+        str
+          .replace(/|/g, "")
+          .replace(/([da-fA-F]{2}) ?/g, "0x$1 ")
+          .replace(/ +$/, "")
+          .split(" ")
+      )
+    );
+  };
+
+  //////////////////////////////////////////////
+
+  const fileload = () => {
+    if (files) {
+      let reader = new FileReader();
+      reader.readAsDataURL(files[0]);
+      reader.onload = (e) => {
+        imagePath = e.target.result.toString();
+      };
+    }
+  };
+
+  const fileupload = async () => {
+    if (files) {
+      uploadedRef = await testUploadFile(files[0]);
+    }
+  };
+
+  $: console.log("uploadedRef :", uploadedRef);
 </script>
 
 <main>
   <h1>Hello {name}!</h1>
+  <section>
+    <div>
+      {#if imagePath}
+        <img src={imagePath} alt="" />
+      {/if}
+    </div>
+    <input type="file" id="file" name="file" bind:files on:change={fileload} />
+    <br />
+    <button on:click={fileupload}>Upload</button>
+  </section>
+  <section>
+    {#if image}
+      {image}
+    {/if}
+  </section>
 </main>
 
 <style>
@@ -16,6 +109,18 @@
     padding: 1em;
     max-width: 240px;
     margin: 0 auto;
+  }
+
+  section {
+    max-height: 300px;
+  }
+
+  section div {
+    max-height: inherit;
+  }
+
+  section img {
+    max-height: inherit;
   }
 
   h1 {
