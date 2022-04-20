@@ -19,7 +19,8 @@
     "d7e9c173ec0bc5ab995752482c9ae42d1141218acfa4979013fe2874d30872aa";
   let uploadedFileReference: string =
     //"64a85b2b6f8b03a56ccb2027bd06b3c7b06fe7ebb6057e23913fb7361b85e920"
-    "4bb2be44bb5b1b42dce4fe7fdd967e3b09ea20f874dd233cf98f4ba6f11865a4";
+    // "4bb2be44bb5b1b42dce4fe7fdd967e3b09ea20f874dd233cf98f4ba6f11865a4"
+    "5e3b29b7b57ab866af63ca193c0cfb6603dabedd6ef5ffef83fe114901de04de";
 
   let swarmData: FileData<Data>;
 
@@ -42,11 +43,25 @@
       swarmData
     );
 
-  $: if (swarmData && swarmData.data) {
+  $: if (swarmData && swarmData.data.buffer) {
     // image.src = `data:image/jpeg;base64,${btoa(swarmData.data.text())}`;
     image.src = URL.createObjectURL(
       new Blob([swarmData.data.buffer], { type: "image/jpeg" })
     );
+
+    document.body.appendChild(image);
+    // let a = document.createElement("a");
+    // document.body.appendChild(a);
+    // a.style = "display: none";
+
+    // var url = URL.createObjectURL(
+    //   new Blob([swarmData.data.buffer], { type: "image/jpeg" })
+    // );
+    // a.href = url;
+    // a.download = "Zoro";
+    // a.click();
+    // URL.revokeObjectURL(url);
+
     console.log("🚀 ~ file: App.svelte ~ line 33 ~ image", image);
   }
 
@@ -98,7 +113,7 @@
   </section>
   <section>
     {#if image}
-      {image}
+      <!-- {image} -->
     {/if}
   </section>
 </main>

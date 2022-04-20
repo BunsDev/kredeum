@@ -19,7 +19,7 @@ const testDownloadData = async (dataReference:string) => {
 }
 
 const testUploadFile = async (file:File) => {
-  const result = await bee.uploadFile("a2fae7a4314c63436d2a575296afe35496bdaa12141c2b73e068c2d175c6ad7c", file, "superfileuploaded", {"pin": true, "deferred": false});
+  const result = await bee.uploadFile("a2fae7a4314c63436d2a575296afe35496bdaa12141c2b73e068c2d175c6ad7c", file, "superfileuploaded", {"pin": true});
 
   return result.reference;
 }
