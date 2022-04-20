@@ -19,8 +19,8 @@ const testDownloadData = async (dataReference:string) => {
   return retrievedFile;
 }
 
-const testUploadFile = async (file:File) => {
-  const result = await bee.uploadFile(batchId, file, "superfileuploaded", {"pin": true});
+const testUploadFile = async (file:File, fileName:string) => {
+  const result = await bee.uploadFile(batchId, file, fileName, {"pin": true});
 
   return result.reference;
 }

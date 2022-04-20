@@ -18,17 +18,19 @@
   //   "d7e9c173ec0bc5ab995752482c9ae42d1141218acfa4979013fe2874d30872aa";
   let uploadedFileReference: string =
     "74e785efff856afe89911cae8cbc51125d30c00e1a06396fbfb235d0b3d84433";
+  // "36899577edc82833b0b90a5fc9f58607e466a76a0ce86746ce8d2f71f5b484a7";
+  // "0e6e400b44e75bfcf8053df1788b56023abe03063f321c64ce9d39f0228673fb";
 
   let swarmData: FileData<Data>;
 
   let files: FileList;
+  let fileName;
+
   let imagePath;
   let imageContainer;
   let image = new Image(300, 200);
 
   let uploadedRef;
-
-  // testBeeJS();
 
   onMount(async () => {
     swarmData = await testDownloadFile(uploadedFileReference);
@@ -75,9 +77,11 @@
     }
   };
 
+  $: if (files) console.log("files[0].name", files[0].name);
+
   const fileupload = async () => {
     if (files) {
-      uploadedRef = await testUploadFile(files[0]);
+      uploadedRef = await testUploadFile(files[0], fileName || files[0].name);
     }
   };
 
@@ -92,6 +96,12 @@
         <img src={imagePath} alt="" />
       {/if}
     </div>
+    <input
+      type="text"
+      placeholder="File name"
+      bind:value={fileName}
+      id="fileName"
+    /><br />
     <input type="file" id="file" name="file" bind:files on:change={fileload} />
     <br />
     <button on:click={fileupload}>Upload</button>
@@ -120,7 +130,7 @@
   }
 
   section img {
-    max-height: inherit;
+    max-height: 220px;
   }
 
   h1 {
