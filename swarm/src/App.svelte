@@ -2,7 +2,6 @@
   import type { Data, FileData } from "@ethersphere/bee-js";
 
   import { onMount } from "svelte";
-  import { text } from "svelte/internal";
 
   import {
     testBeeJS,
@@ -13,19 +12,18 @@
 
   export let name: string;
 
-  let dataReference: string =
-    "fd79d5e0ebd8407e422f53ce1d7c4c41ebf403be55143900f8d1490560294780";
-  let fileReference: string =
-    "d7e9c173ec0bc5ab995752482c9ae42d1141218acfa4979013fe2874d30872aa";
+  // let dataReference: string =
+  //   "fd79d5e0ebd8407e422f53ce1d7c4c41ebf403be55143900f8d1490560294780";
+  // let fileReference: string =
+  //   "d7e9c173ec0bc5ab995752482c9ae42d1141218acfa4979013fe2874d30872aa";
   let uploadedFileReference: string =
-    //"64a85b2b6f8b03a56ccb2027bd06b3c7b06fe7ebb6057e23913fb7361b85e920"
-    // "4bb2be44bb5b1b42dce4fe7fdd967e3b09ea20f874dd233cf98f4ba6f11865a4"
-    "5e3b29b7b57ab866af63ca193c0cfb6603dabedd6ef5ffef83fe114901de04de";
+    "74e785efff856afe89911cae8cbc51125d30c00e1a06396fbfb235d0b3d84433";
 
   let swarmData: FileData<Data>;
 
   let files: FileList;
   let imagePath;
+  let imageContainer;
   let image = new Image(300, 200);
 
   let uploadedRef;
@@ -49,7 +47,7 @@
       new Blob([swarmData.data.buffer], { type: "image/jpeg" })
     );
 
-    document.body.appendChild(image);
+    imageContainer.appendChild(image);
     // let a = document.createElement("a");
     // document.body.appendChild(a);
     // a.style = "display: none";
@@ -64,19 +62,6 @@
 
     console.log("🚀 ~ file: App.svelte ~ line 33 ~ image", image);
   }
-
-  const hexToBase64 = (str) => {
-    return btoa(
-      String.fromCharCode.apply(
-        null,
-        str
-          .replace(/|/g, "")
-          .replace(/([da-fA-F]{2}) ?/g, "0x$1 ")
-          .replace(/ +$/, "")
-          .split(" ")
-      )
-    );
-  };
 
   //////////////////////////////////////////////
 
@@ -113,7 +98,7 @@
   </section>
   <section>
     {#if image}
-      <!-- {image} -->
+      <div bind:this={imageContainer} />
     {/if}
   </section>
 </main>

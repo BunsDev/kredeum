@@ -1,11 +1,12 @@
 import { Bee } from "@ethersphere/bee-js";
 
 const bee = new Bee("http://localhost:1633");
+const batchId = "5feccb39054640d8721c2c8393f0f3317ea0753f499e89166741195d006d7be6";
 
 const testBeeJS = async () => {
   console.log("testBeeJS");
 
-  const result = await bee.uploadData("a2fae7a4314c63436d2a575296afe35496bdaa12141c2b73e068c2d175c6ad7c", "Bee is awesome!");
+  const result = await bee.uploadData(batchId, "Bee is awesome!");
   console.log("data upload reference", result.reference);
 
   const retrievedData = await bee.downloadData(result.reference);
@@ -19,7 +20,7 @@ const testDownloadData = async (dataReference:string) => {
 }
 
 const testUploadFile = async (file:File) => {
-  const result = await bee.uploadFile("a2fae7a4314c63436d2a575296afe35496bdaa12141c2b73e068c2d175c6ad7c", file, "superfileuploaded", {"pin": true});
+  const result = await bee.uploadFile(batchId, file, "superfileuploaded", {"pin": true});
 
   return result.reference;
 }
