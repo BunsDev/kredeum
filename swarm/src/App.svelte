@@ -8,9 +8,11 @@
   export let name: string;
 
   let uploadedFileReference: string =
-    "74e785efff856afe89911cae8cbc51125d30c00e1a06396fbfb235d0b3d84433";
-  // "36899577edc82833b0b90a5fc9f58607e466a76a0ce86746ce8d2f71f5b484a7";
-  // "0e6e400b44e75bfcf8053df1788b56023abe03063f321c64ce9d39f0228673fb";
+    // "74e785efff856afe89911cae8cbc51125d30c00e1a06396fbfb235d0b3d84433";
+    // "36899577edc82833b0b90a5fc9f58607e466a76a0ce86746ce8d2f71f5b484a7";
+    // "0e6e400b44e75bfcf8053df1788b56023abe03063f321c64ce9d39f0228673fb";
+    // "c89f75b1de77d004ebd31a9b5bdf142462a6bfd8a5c10ade73513d03b9bb77c8";
+    "d3c1e2faf179138a3ccabec3d162d4a6e436106b08bda282fb4acb57a3454277";
 
   let swarmData: FileData<Data>;
 
@@ -26,6 +28,15 @@
   onMount(async () => {
     swarmData = await downloadFile(uploadedFileReference);
   });
+
+  $: updateDownloadedFile(uploadedFileReference);
+
+  const updateDownloadedFile = async (uploadedFileReference) => {
+    swarmData = await downloadFile(uploadedFileReference);
+    files = undefined;
+    imagePath = "";
+    fileName = undefined;
+  };
 
   $: if (swarmData)
     console.log(
@@ -60,6 +71,7 @@
   const fileupload = async () => {
     if (files) {
       uploadedRef = await uploadFile(files[0], fileName || files[0].name);
+      uploadedFileReference = uploadedRef;
     }
   };
 
