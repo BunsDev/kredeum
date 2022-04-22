@@ -19,6 +19,7 @@
   let files: FileList;
   let imagePath;
   let fileName;
+  let contentType;
 
   let imageContainer;
   let image = new Image(300, 200);
@@ -63,14 +64,19 @@
       reader.onload = (e) => {
         imagePath = e.target.result.toString();
       };
+      contentType = files[0].type;
     }
   };
 
-  $: if (files) console.log("files[0].name", files[0].name);
+  $: if (files) console.log("files[0].name", files[0]);
 
   const fileupload = async () => {
     if (files) {
-      uploadedRef = await uploadFile(files[0], fileName || files[0].name);
+      uploadedRef = await uploadFile(
+        files[0],
+        fileName || files[0].name,
+        contentType
+      );
       uploadedFileReference = uploadedRef;
     }
   };
