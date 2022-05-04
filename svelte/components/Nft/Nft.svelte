@@ -25,6 +25,7 @@
   export let address: string;
   export let tokenID: string;
   export let account: string = undefined;
+  export let platform: string = "dapp";
   let nft: Readable<NftType>;
 
   // let i = 1;
