@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Nft } from "lib/ktypes";
+  import type { NftType } from "lib/ktypes";
   // import type { Collection as CollectionType } from "lib/ktypes";
   import { factoryGetAddress } from "lib/kfactory-get";
   import { getCreate } from "lib/kconfig";
@@ -12,18 +12,15 @@
   //   metamaskConnectMessage,
   //   metamaskInstallMessage
   // } from "helpers/metamaskWpHelper";
-  import Metamask from "../Tests/Metamask.svelte";
   // import { metamaskAccount } from "main/metamaskWp";
 
   import AccountConnect from "../Account/AccountConnect.svelte";
   import NetworkList from "../Network/NetworkList.svelte";
-  import CollectionListGet from "../CollectionList/CollectionListGet.svelte";
 
   import Create from "../Global/Create.svelte";
   // import Navigation from "./Global/Navigation.svelte";
 
-  import NftGet from "../Nft/NftGet.svelte";
-  import NftSolo from "../Nft/Nft.svelte";
+  import Nft from "../Nft/Nft.svelte";
 
   // import NftsListGet from "./NftsList/NftsListGet.svelte";
   // import NftsListRefresh from "./NftsList/NftsListRefresh.svelte";
@@ -123,8 +120,6 @@
   });
 </script>
 
-<!-- <Metamask {account} {chainId} /> -->
-<Metamask bind:account bind:chainId />
 <ShortcodeLayout>
   <span slot="nav">
     <!-- <Navigation /> -->
@@ -141,10 +136,10 @@
 
     <div class="row alignbottom">
       <!-- View account -->
-      <!-- <AccountConnect bind:account /> -->
+      <AccountConnect bind:account />
 
       <!-- Select network -->
-      <!-- <NetworkList bind:chainId /> -->
+      <NetworkList bind:chainId />
 
       <!-- Select collection -->
       {#if chainId && account}
@@ -163,10 +158,8 @@
     <!-- <NftDetail collection={collectionObject} {tokenID} /> -->
     {#if chainId && account && collection}
       {#if nft}
-        <div class="table">
-          <!-- <NftGet {chainId} {collection} {tokenID} /> -->
-          <NftSolo {nft} />
-        </div>
+        <!-- <NftGet {chainId} {collection} {tokenID} /> -->
+        <Nft chainId={nft.chainId} address={nft.address} tokenID={nft.tokenID} account={nft.account} {platform} />
       {:else}
         <!-- <NftsList {chainId} {collection} {account} bind:refreshing bind:nftsList {platform} /> -->
         <!-- <NftsListGet {chainId} {collection} {account} bind:refreshing {refresh} /> -->
