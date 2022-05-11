@@ -50,7 +50,7 @@
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  export let props;
+  export let props: Record<string, string>;
 
   let platform: string = "wordpress";
 
@@ -74,7 +74,7 @@
 
   $: displayError = JSON.stringify($error);
 
-  $: fetchNfts(chainId, collection, tokenID, $metamaskProvider);
+  $: fetchNfts(chainId, collection, tokenID, $metamaskProvider).catch(console.error);
 
   // const bee = new Bee("http://localhost:1633");
 

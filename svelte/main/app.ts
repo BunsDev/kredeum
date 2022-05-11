@@ -69,13 +69,13 @@ let wpFrontEntryPoint: WpFrontEntryPoint;
 
 // Convert "chainid" in "chainId" & "tokenid" in "tokenID"
 const _propsUpCase = (lowCaseProps: object) => {
-  const upCaseProps: object = lowCaseProps;
+  const upCaseProps: Props = lowCaseProps as Props;
   for (const [key, value] of Object.entries(lowCaseProps)) {
     if ("chainid" === key) {
-      upCaseProps["chainId"] = value;
+      upCaseProps["chainId"] = value as string;
       delete upCaseProps[key];
     } else if ("tokenid" === key) {
-      upCaseProps["tokenID"] = value;
+      upCaseProps["tokenID"] = value as string;
       delete upCaseProps[key];
     }
   }
@@ -87,11 +87,14 @@ const _propsUpCase = (lowCaseProps: object) => {
   // Kredeum Dapp component
   const target: HTMLElement = document.querySelector("#kredeum-wpfront");
 
+  // const wpProps: Props;
+  const dataSets: string = target.dataset.props;
+
   if (target) {
-    const wpProps: object = JSON.parse(target.dataset.props);
+    const wpProps = JSON.parse(dataSets) as Props;
     console.log(_propsUpCase(wpProps));
 
-    wpFrontEntryPoint = new WpFrontEntryPoint({ target, props: {"props": _propsUpCase(wpProps)} });
+    wpFrontEntryPoint = new WpFrontEntryPoint({ target, props: { props: _propsUpCase(wpProps) } });
   }
 }
 

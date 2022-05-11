@@ -75,8 +75,7 @@ add_shortcode(
 		);
 
 		// $props = str_replace( "\"", "-", json_encode($args));
-		$props = esc_attr( json_encode($args) );
-
+		$props = esc_attr( json_encode( $args ) );
 
 		$o  = '<div id="kredeum-wpfront" data-props="' . $props . '">';
 		$o .= '</div>';
