@@ -28,16 +28,16 @@
   let fileSize;
   let contentType;
 
-  let imageContainer;
+  let imageContainer: HTMLElement;
   let image = new Image(300, 200);
 
-  let uploadedRef;
+  let uploadedRef: string;
 
   onMount(async () => {
     swarmData = await downloadFile(uploadedFileReference);
   });
 
-  $: resetDownloadedFile(uploadedFileReference);
+  $: resetDownloadedFile(uploadedFileReference).catch(console.error);
 
   const resetDownloadedFile = async (uploadedFileReference) => {
     swarmData = await downloadFile(uploadedFileReference);
