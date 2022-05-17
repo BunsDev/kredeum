@@ -74,6 +74,10 @@
         imagePath = e.target.result.toString();
         contentType = files[0].type;
         fileSize = files[0].size;
+        console.log(
+          "🚀 ~ file: App.svelte ~ line 77 ~ fileload ~ files[0]",
+          files[0]
+        );
       };
     }
   };

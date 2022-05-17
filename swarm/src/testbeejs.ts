@@ -10,12 +10,24 @@ const uploadFile = async (
   contentType: string,
   fileSize: number
 ): Promise<string> => {
-  console.log("🚀 ~ file: testbeejs.ts ~ line 18 ~ contentType", contentType);
+  const tag = await bee.createTag();
+  const updatedTag = await bee.retrieveTag(tag);
+  console.log(
+    "🚀 ~ file: beejs.ts ~ line 10 ~ uploadFile ~ updatedTag",
+    updatedTag
+  );
+  // console.log("🚀 ~ file: beejs.ts ~ line 8 ~ uploadFile ~ file", file);
   const result = await bee.uploadFile(batchId, file, fileName, {
     pin: true,
     size: fileSize,
     contentType: contentType,
+    tag: tag.uid,
   });
+  const updatedTag2 = await bee.retrieveTag(tag);
+  console.log(
+    "🚀 ~ file: beejs.ts ~ line 19 ~ uploadFile ~ updatedTag2",
+    updatedTag2
+  );
 
   return result.reference;
 };

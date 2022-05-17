@@ -162,7 +162,7 @@
     <!-- <NftDetail collection={collectionObject} {tokenID} /> -->
 
     <Demo name={"swarm"} />
-    hop!
+
     {#if chainId && account && collection}
       {#if nft}
         <!-- <NftGet {chainId} {collection} {tokenID} /> -->

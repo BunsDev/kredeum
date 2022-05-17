@@ -15370,12 +15370,18 @@ var app = (function () {
     const bee = new Bee("http://localhost:1633");
     const batchId = "5feccb39054640d8721c2c8393f0f3317ea0753f499e89166741195d006d7be6";
     const uploadFile = async (file, fileName, contentType, fileSize) => {
-        console.log("🚀 ~ file: testbeejs.ts ~ line 18 ~ contentType", contentType);
+        const tag = await bee.createTag();
+        const updatedTag = await bee.retrieveTag(tag);
+        console.log("🚀 ~ file: beejs.ts ~ line 10 ~ uploadFile ~ updatedTag", updatedTag);
+        // console.log("🚀 ~ file: beejs.ts ~ line 8 ~ uploadFile ~ file", file);
         const result = await bee.uploadFile(batchId, file, fileName, {
             pin: true,
             size: fileSize,
             contentType: contentType,
+            tag: tag.uid,
         });
+        const updatedTag2 = await bee.retrieveTag(tag);
+        console.log("🚀 ~ file: beejs.ts ~ line 19 ~ uploadFile ~ updatedTag2", updatedTag2);
         return result.reference;
     };
     const downloadFile = async (fileReference) => await bee.downloadFile(fileReference);
@@ -15385,7 +15391,7 @@ var app = (function () {
     const { console: console_1 } = globals$1;
     const file = "src/App.svelte";
 
-    // (75:6) {#if imagePath}
+    // (76:6) {#if imagePath}
     function create_if_block_1(ctx) {
     	let img;
     	let img_src_value;
@@ -15396,7 +15402,7 @@ var app = (function () {
     			if (!src_url_equal(img.src, img_src_value = /*imagePath*/ ctx[4])) attr_dev(img, "src", img_src_value);
     			attr_dev(img, "alt", "");
     			attr_dev(img, "class", "svelte-t19x4a");
-    			add_location(img, file, 75, 8, 2823);
+    			add_location(img, file, 76, 8, 2915);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, img, anchor);
@@ -15415,14 +15421,14 @@ var app = (function () {
     		block,
     		id: create_if_block_1.name,
     		type: "if",
-    		source: "(75:6) {#if imagePath}",
+    		source: "(76:6) {#if imagePath}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (93:4) {#if image}
+    // (94:4) {#if image}
     function create_if_block(ctx) {
     	let div;
 
@@ -15430,7 +15436,7 @@ var app = (function () {
     		c: function create() {
     			div = element("div");
     			attr_dev(div, "class", "svelte-t19x4a");
-    			add_location(div, file, 93, 6, 3188);
+    			add_location(div, file, 94, 6, 3280);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -15447,7 +15453,7 @@ var app = (function () {
     		block,
     		id: create_if_block.name,
     		type: "if",
-    		source: "(93:4) {#if image}",
+    		source: "(94:4) {#if image}",
     		ctx
     	});
 
@@ -15506,27 +15512,27 @@ var app = (function () {
     			section1 = element("section");
     			if (if_block1) if_block1.c();
     			attr_dev(h1, "class", "svelte-t19x4a");
-    			add_location(h1, file, 70, 4, 2736);
-    			add_location(header, file, 69, 2, 2723);
+    			add_location(h1, file, 71, 4, 2828);
+    			add_location(header, file, 70, 2, 2815);
     			attr_dev(div, "class", "svelte-t19x4a");
-    			add_location(div, file, 73, 4, 2787);
+    			add_location(div, file, 74, 4, 2879);
     			attr_dev(input0, "type", "text");
     			attr_dev(input0, "placeholder", "File name");
     			attr_dev(input0, "id", "fileName");
-    			add_location(input0, file, 79, 4, 2882);
-    			add_location(br0, file, 84, 6, 2991);
+    			add_location(input0, file, 80, 4, 2974);
+    			add_location(br0, file, 85, 6, 3083);
     			attr_dev(input1, "type", "file");
     			attr_dev(input1, "id", "file");
     			attr_dev(input1, "name", "file");
-    			add_location(input1, file, 86, 4, 3003);
-    			add_location(br1, file, 87, 4, 3083);
-    			add_location(button, file, 89, 4, 3095);
+    			add_location(input1, file, 87, 4, 3095);
+    			add_location(br1, file, 88, 4, 3175);
+    			add_location(button, file, 90, 4, 3187);
     			attr_dev(section0, "class", "svelte-t19x4a");
-    			add_location(section0, file, 72, 2, 2773);
+    			add_location(section0, file, 73, 2, 2865);
     			attr_dev(section1, "class", "svelte-t19x4a");
-    			add_location(section1, file, 91, 2, 3156);
+    			add_location(section1, file, 92, 2, 3248);
     			attr_dev(main, "class", "svelte-t19x4a");
-    			add_location(main, file, 68, 0, 2714);
+    			add_location(main, file, 69, 0, 2806);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -15673,6 +15679,7 @@ var app = (function () {
     				$$invalidate(4, imagePath = e.target.result.toString());
     				contentType = files[0].type;
     				fileSize = files[0].size;
+    				console.log("🚀 ~ file: App.svelte ~ line 77 ~ fileload ~ files[0]", files[0]);
     			};
     		}
     	};

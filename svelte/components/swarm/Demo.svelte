@@ -34,7 +34,7 @@
   let uploadedRef: string;
 
   onMount(async () => {
-    swarmData = await downloadFile(uploadedFileReference);
+    // swarmData = await downloadFile(uploadedFileReference);
   });
 
   $: resetDownloadedFile(uploadedFileReference).catch(console.error);
@@ -48,15 +48,20 @@
     fileSize = undefined;
   };
 
-  $: if (swarmData) console.log("🚀 ~ file: App.svelte ~ line 21 ~ onMount ~ swarmData", swarmData);
+  $: if (swarmData) console.log("🚀 ~ file: App.svelte ~ line 21 ~ onMount ~ swarmData", swarmData.data);
 
-  $: if (swarmData?.data.buffer) {
-    image.src = URL.createObjectURL(new Blob([swarmData.data.buffer], { type: swarmData.contentType }));
+  $: swarmData && changeImage();
 
-    imageContainer.appendChild(image);
+  const changeImage = () => {
+    if (swarmData?.data.buffer) {
+      image.src = URL.createObjectURL(new Blob([swarmData.data.buffer], { type: swarmData.contentType }));
+      // image.src = "https://api.gateway.ethswarm.org/bzz/" + uploadedFileReference;
 
-    console.log("🚀 ~ file: App.svelte ~ line 33 ~ image", image);
-  }
+      imageContainer.appendChild(image);
+
+      console.log("🚀 ~ file: App.svelte ~ line 33 ~ image", image);
+    }
+  };
 
   //////////////////////////////////////////////
 
@@ -100,7 +105,9 @@
 
     <input type="text" placeholder="File name" bind:value={fileName} id="fileName" /><br />
 
-    <input type="file" id="file" name="file" bind:files on:change={fileload} />
+    {#key uploadedFileReference}
+      <input type="file" id="file" name="file" bind:files on:change={fileload} />
+    {/key}
     <br />
 
     <button on:click={fileupload}>Upload</button>

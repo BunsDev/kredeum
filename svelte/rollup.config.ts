@@ -9,6 +9,7 @@ import replace from "@rollup/plugin-replace";
 // import _css from "rollup-plugin-css-only";
 import _postcss from "rollup-plugin-postcss";
 import _builtins from "rollup-plugin-node-builtins";
+import _globals from "rollup-plugin-node-globals";
 
 import typescript from "@rollup/plugin-typescript";
 import sveltePreprocess from "svelte-preprocess";
@@ -17,6 +18,7 @@ import dotenv from "dotenv";
 import findupSync from "findup-sync";
 
 const builtins = _builtins as { (): Plugin };
+const globals = _globals as { (Options): Plugin };
 // const css = _css as { (Options): Plugin };
 const postcss = _postcss as { (Options): Plugin };
 
@@ -86,6 +88,13 @@ const toRollupConfig = function (component: string): RollupOptions {
       builtins(),
       json(),
       commonjs(),
+      globals({
+        process: true,
+        global: true,
+        buffer: true,
+        dirname: true,
+        filename: true
+      }),
       production && terser()
     ],
     watch: {
