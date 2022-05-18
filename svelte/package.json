@@ -2,6 +2,7 @@
   "author": "",
   "description": "",
   "devDependencies": {
+    "@ethersphere/bee-js": "^3.3.4",
     "@ethersproject/abstract-provider": "^5.6.0",
     "@ethersproject/providers": "^5.6.4",
     "@metamask/detect-provider": "^1.2.0",
@@ -61,8 +62,5 @@
     "prettier": "prettier components/**/*.svelte helpers/**/*.ts stores/**/*.ts main/**/*.ts --write --loglevel error",
     "tests": "cypress run"
   },
-  "version": "1.0.0",
-  "dependencies": {
-    "@ethersphere/bee-js": "^3.3.4"
-  }
+  "version": "1.0.0"
 }
