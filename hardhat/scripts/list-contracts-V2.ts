@@ -35,10 +35,11 @@ const logCollection = async (chainId: number, nftsFactory: NFTsFactoryV2, max: n
       output += " is NFTsFactoryV2";
     } else {
       const collectionObject = await collectionGet(chainId, collectionAddress, provider);
-      const collection = new Contract(collectionAddress, INFT, provider) as ERC721Enumerable;
-      const { supports, mintable, totalSupply, name, symbol } = collectionObject;
-      // console.log("logCollection ~ collectionObject", collectionObject);
+      const collection = new Contract(collectionAddress, INFT, provider) as unknown as ERC721Enumerable;
+      const { supports, totalSupply, name, symbol } = collectionObject;
+      const mintable = false;
 
+      // console.log("logCollection ~ collectionObject", collectionObject);
       if (collection) {
         output += `${String(totalSupply || 0).padStart(8)} ${(symbol || "").padEnd(5)} ${(name || "").padEnd(32)} ${
           mintable ? "mintable" : ""
@@ -60,15 +61,7 @@ const logCollection = async (chainId: number, nftsFactory: NFTsFactoryV2, max: n
 };
 
 const main = async (): Promise<void> => {
-  const logNetworks = [
-    // "mainnet",
-    // "arbitrum"
-    // "matic",
-    // "xdai"
-    "bsc"
-    // "fantom",
-    // "avalanche"
-  ];
+  const logNetworks = ["mainnet", "arbitrum", "optimism", "matic", "avalanche", "xdai", "fantom", "bsc"];
 
   for await (const network of networks.filter((nw) => logNetworks.includes(nw.chainName))) {
     if (network.mainnet && network.nftsFactoryV2) {
@@ -81,7 +74,7 @@ const main = async (): Promise<void> => {
         network.nftsFactoryV2,
         INFTsFactory.concat(ICloneFactory),
         provider
-      ) as NFTsFactoryV2;
+      ) as unknown as NFTsFactoryV2;
       const nb = Number(await nftsFactory.implementationsCount());
 
       console.log(

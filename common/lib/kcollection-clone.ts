@@ -8,7 +8,7 @@ import { factoryGetContract } from "./kfactory-get";
 const _cloneParams = async (nftsFactory: NFTsFactoryV2, name: string, symbol: string) => {
   const n = (await nftsFactory.implementationsCount()).toString();
   const _name = name || `Open NFTs #${n}`;
-  const _symbol = symbol || `NFTs${n}`;
+  const _symbol = symbol || `COLL${n}`;
   return { _name, _symbol };
 };
 

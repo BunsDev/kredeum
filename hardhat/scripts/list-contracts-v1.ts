@@ -33,7 +33,7 @@ const logCollection = async (chainId: number, nftsFactory: NFTsFactory, max: num
       output += " is NFTsFactory";
     } else {
       const collectionObject = await collectionGet(chainId, collectionAddress, provider);
-      const collection = new Contract(collectionAddress, INFT, provider) as ERC721Enumerable;
+      const collection = new Contract(collectionAddress, INFT, provider) as unknown as ERC721Enumerable;
       const { supports } = collectionObject;
 
       if (collection) {
@@ -71,7 +71,7 @@ const main = async (): Promise<void> => {
         network.nftsFactory,
         INFTsFactory.concat(ICloneFactory),
         provider
-      ) as NFTsFactory;
+      ) as unknown as NFTsFactory;
       const nb = Number(await nftsFactory.implementationsCount());
 
       console.log(
