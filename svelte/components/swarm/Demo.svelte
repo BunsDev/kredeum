@@ -5,6 +5,8 @@
 
   import { uploadFile, downloadFile } from "helpers/beejs";
 
+  import MediaPreview from "../Global/mediasDisplay/mediasComponents/MediaPreview.svelte";
+
   export let name: string;
 
   let uploadedFileReference: string =
@@ -33,6 +35,12 @@
 
   let uploadedRef: string;
 
+  let mediaSrc: string;
+  let index: number = 0;
+  let mediaType: string = "image";
+  let alt: string = "image";
+  let displayMode: string = "preview";
+
   onMount(async () => {
     // swarmData = await downloadFile(uploadedFileReference);
   });
@@ -54,10 +62,10 @@
 
   const changeImage = () => {
     if (swarmData?.data.buffer) {
-      image.src = URL.createObjectURL(new Blob([swarmData.data.buffer], { type: swarmData.contentType }));
+      mediaSrc = URL.createObjectURL(new Blob([swarmData.data.buffer], { type: swarmData.contentType }));
       // image.src = "https://api.gateway.ethswarm.org/bzz/" + uploadedFileReference;
 
-      imageContainer.appendChild(image);
+      // imageContainer.appendChild(image);
 
       console.log("🚀 ~ file: App.svelte ~ line 33 ~ image", image);
     }
@@ -114,12 +122,19 @@
   </section>
   <section>
     {#if image}
-      <div bind:this={imageContainer} />
+      <!-- <div bind:this={imageContainer} /> -->
+      <div class="swarm">
+        <MediaPreview {mediaSrc} {index} {mediaType} {alt} {displayMode} />
+      </div>
     {/if}
   </section>
 </main>
 
 <style>
+  .swarm {
+    width: 30vw;
+  }
+
   main {
     text-align: center;
     padding: 1em;
