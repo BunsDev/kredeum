@@ -66,7 +66,7 @@
     {#if chainId && account && address}
       <Content {chainId} {address} {account} {platform} bind:refreshing {refresh} />
     {/if}
-    <Demo name={"swarm"} />
+    <Demo name={"swarm"} {chainId} />
   </span>
 </HomeLayout>
 

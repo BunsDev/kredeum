@@ -5,9 +5,15 @@
 
   import { uploadFile, downloadFile } from "helpers/beejs";
 
+  import NftMintSwarm from "./NftMintSwarm.svelte";
+  import { fade } from "svelte/transition";
+  import { clickOutside, clickToClose } from "helpers/clickTools";
+
   import MediaPreview from "../Global/mediasDisplay/mediasComponents/MediaPreview.svelte";
 
   export let name: string;
+
+  export let chainId: number;
 
   let uploadedFileReference: string =
     // "74e785efff856afe89911cae8cbc51125d30c00e1a06396fbfb235d0b3d84433";
@@ -40,6 +46,13 @@
   let mediaType: string = "image";
   let alt: string = "image";
   let displayMode: string = "preview";
+
+  let open = false;
+
+  const openSwarmMintModal = () => {
+    open = true;
+    console.log(open);
+  };
 
   onMount(async () => {
     // swarmData = await downloadFile(uploadedFileReference);
@@ -104,6 +117,7 @@
   <header>
     <h1>Hello {name}!</h1>
   </header>
+  <span on:click={() => openSwarmMintModal()} class="btn btn-default" title="Mint NFT">Mint Swarm NFT</span>
   <section>
     <div>
       {#if imagePath}
@@ -128,9 +142,27 @@
       </div>
     {/if}
   </section>
+  <!-- SubModal create NFT -->
+  {#if open}
+    <div id="create-swarm-nft" class="modal-window" transition:fade>
+      <div
+        use:clickOutside={() => {
+          open = false;
+        }}
+      >
+        <NftMintSwarm {chainId} />
+      </div>
+    </div>
+  {/if}
 </main>
 
 <style>
+  #create-swarm-nft {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .swarm {
     width: 30vw;
   }
