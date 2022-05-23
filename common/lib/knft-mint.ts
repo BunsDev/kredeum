@@ -43,8 +43,8 @@ const _mintedNft = async (
 
 const nftMintTexts = [
   "Mint",
-  "Wait till Image stored on IPFS",
-  "Wait till Metadata stored on IPFS",
+  "Wait till Image stored on Swarm",
+  "Wait till Metadata stored on Swarm",
   "Please, sign the transaction",
   "Wait till transaction completed, it may take one minute or more..."
 ];

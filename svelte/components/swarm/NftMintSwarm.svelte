@@ -315,7 +315,7 @@
           {/if}
 
           <li class={minting >= 2 ? "complete" : ""}>
-            <div class="flex"><span class="label">Image ipfs link</span></div>
+            <div class="flex"><span class="label">Swarm Image link</span></div>
             <div class="flex">
               {#if ipfsImage}
                 <a class="link" href={ipfsGatewayUrl(ipfsImage)} target="_blank">{textShort(ipfsImage, 15)}</a>
@@ -323,7 +323,7 @@
             </div>
           </li>
           <li class={minting >= 3 ? "complete" : ""}>
-            <div class="flex"><span class="label">Metadata ipfs link</span></div>
+            <div class="flex"><span class="label">Swarm Metadata link</span></div>
             <div class="flex">
               {#if ipfsJson}
                 <a class="link" href={ipfsGatewayUrl(ipfsJson)} target="_blank">{textShort(ipfsJson, 15)}</a>
