@@ -12,6 +12,7 @@ import IERC1155 from "abis/IERC1155.json";
 import IERC1155MetadataURI from "abis/IERC1155MetadataURI.json";
 import IERC173 from "abis/IERC173.json";
 
+import IOpenMulti from "abis/IOpenMulti.json";
 import IOpenNFTsV2 from "abis/IOpenNFTsV2.json";
 import IOpenNFTsV3 from "abis/IOpenNFTsV3.json";
 
@@ -63,9 +64,15 @@ const collectionGetSupports = async (
         const waitEnumerable = contract.supportsInterface(interfaceId(IERC721Enumerable));
         const waitOpenNFTsV2 = contract.supportsInterface(interfaceId(IOpenNFTsV2));
         const waitOpenNFTsV3 = contract.supportsInterface(interfaceId(IOpenNFTsV3));
+        const waitOpenMulti = contract.supportsInterface(interfaceId(IOpenMulti));
 
-        [supports.IERC721Metadata, supports.IERC721Enumerable, supports.IOpenNFTsV2, supports.IOpenNFTsV3] =
-          await Promise.all([waitMetadata, waitEnumerable, waitOpenNFTsV2, waitOpenNFTsV3]);
+        [
+          supports.IERC721Metadata,
+          supports.IERC721Enumerable,
+          supports.IOpenNFTsV2,
+          supports.IOpenNFTsV3,
+          supports.IOpenMulti
+        ] = await Promise.all([waitMetadata, waitEnumerable, waitOpenNFTsV2, waitOpenNFTsV3, waitOpenMulti]);
 
         // Supports ERC165,  should have already reverted otherwise
         supports.IERC165 = true;
@@ -174,14 +181,20 @@ const collectionGetOtherData = async (
       );
     }
 
-    try {
-      // Get name and symbol ... try it if IERC1155... may revert as not normalized
-      if (supports.IERC1155) {
+    // Get name if IERC1155 ... may revert as not normalized
+    if (supports.IERC1155) {
+      try {
         collection.name = await contract.name();
-        collection.symbol = await contract.symbol();
+      } catch (err) {
+        console.log("ERC1155 collection with no name", collection);
       }
-    } catch (err) {
-      console.log("ERC1155 collection with no name and symbol");
+    }
+    if (!collection.name) {
+      // ENS smartcontract
+      if (chainId === 1 && collection.address === "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85") {
+        collection.name = "ENS domains";
+        collection.symbol = "ENS";
+      }
     }
   } catch (err) {
     console.log(`No contract found @ ${collectionKey(chainId, address, account)}\n`);

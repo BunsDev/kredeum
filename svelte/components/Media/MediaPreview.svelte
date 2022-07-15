@@ -1,31 +1,44 @@
 <script lang="ts">
-  import { NftType } from "lib/ktypes";
+  import { getContext } from "svelte";
+  import { Writable } from "svelte/store";
+  import type { NftMetadata, NftType } from "lib/ktypes";
+
   import { clickOutside } from "helpers/clickOutside";
   import { fade } from "svelte/transition";
 
   import MediaDisplay from "./MediaDisplay.svelte";
 
   /////////////////////////////////////////////////
-  //  <MediaPreview {nft} {index} {displayMode}? {alt}? />
+  //  <MediaPreview {nft} {displayMode}? {alt}? />
   // Display a clickable preview of media opening a zoom modal with full media
   // Modal closing by clickoutside
   /////////////////////////////////////////////////
   export let nft: NftType;
-  export let index: number;
   export let alt: string = nft.name || "media";
 
   let open = false;
+  let metadatas: NftMetadata;
+  $: metadatas = nft?.metadata;
+
+  let toPlayTokenID: Writable<string> = getContext("toPlayTokenID");
 </script>
 
 <!-- <div class="grid-detail-krd"> -->
 <div class="media-zoom">
   <div class="media">
     <span
-      class="krd-pointer {nft.contentType?.startsWith('video') ? 'no-zoom-hover' : 'zoom-hover'}"
-      on:click={() => (open = true)}
+      class="krd-pointer {nft.contentType?.startsWith('video') || metadatas?.animation_url
+        ? 'no-zoom-hover'
+        : 'zoom-hover'}"
+      on:click={() =>
+        !metadatas?.animation_url
+          ? (open = true)
+          : $toPlayTokenID !== nft.tokenID
+          ? ($toPlayTokenID = nft.tokenID)
+          : ($toPlayTokenID = "")}
     >
       <i class="fas fa-search" />
-      <MediaDisplay {nft} {index} displayMode={"preview"} {alt} />
+      <MediaDisplay {nft} displayMode={"preview"} {alt} />
     </span>
   </div>
 </div>
@@ -43,7 +56,7 @@
           <i class="fa fa-times" /></span
         >
         <div class="modal-body">
-          <MediaDisplay {nft} {index} displayMode={"preview"} small={false} {alt} />
+          <MediaDisplay {nft} displayMode={"preview"} small={false} {alt} />
         </div>
       </div>
     </div>
@@ -61,8 +74,18 @@
     cursor: pointer;
   }
 
+  .no-zoom-hover {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
   .krd-pointer.no-zoom-hover i.fas {
     display: none;
+  }
+
+  .media {
+    width: 100%;
   }
 
   .media-zoom .media {

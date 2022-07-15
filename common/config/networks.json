@@ -17,6 +17,10 @@
       "url": "https://api.thegraph.com/subgraphs/name/amxx/eip721-subgraph/graphql",
       "active": false
     },
+    "alchemy": {
+      "url": "https://eth-mainnet.alchemyapi.io/v2",
+      "active": true
+    },
     "covalent": {
       "active": true
     },
@@ -78,6 +82,10 @@
       "startBlock": 16875648,
       "active": true
     },
+    "alchemy": {
+      "url": "https://polygon-mainnet.g.alchemy.com/v2",
+      "active": true
+    },
     "covalent": {
       "active": true
     },
@@ -113,7 +121,12 @@
   {
     "chainId": 100,
     "chainName": "xdai",
-    "rpcUrls": ["https://rpc.xdaichain.com", "https://xdai.poanetwork.dev/", "https://dai.poa.network/"],
+    "rpcUrls": [
+      "https://rpc.ankr.com/gnosis",
+      "https://rpc.xdaichain.com",
+      "https://xdai.poanetwork.dev/",
+      "https://dai.poa.network/"
+    ],
     "nativeCurrency": {
       "name": "xDAI",
       "symbol": "xDAI",
@@ -226,9 +239,28 @@
       "active": false
     },
     "eip1559": true,
-    "defaultOpenNFTs": "",
+    "defaultOpenNFTs": "0x8a324A30C8ca1E9CFcea267C2116968cAacEd1D6",
     "nftsFactory": "0x636BeA69422e087eA87Ae6A98300065C11826b2C",
-    "nftsFactoryV2": "0xD5dA0F2bf1029c64460e4e1CE1fA0f88E7E39800",
+    "nftsFactoryV2": "0xBda19424590E3DB9DF04091F7510F487eD19E037",
+    "create": true,
+    "testnet": true
+  },
+  {
+    "chainId": 3,
+    "chainName": "ropsten",
+    "rpcUrls": ["https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161", "https://ropsten.infura.io/v3/"],
+    "nativeCurrency": {
+      "name": "Ether",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "blockExplorerUrls": ["https://ropsten.etherscan.io"],
+    "covalent": {
+      "active": false
+    },
+    "eip1559": true,
+    "defaultOpenNFTs": "0x7B5E42Ab37Bf962413a2B062fE7373141e643f46",
+    "nftsFactoryV2": "0x3fB23c510e46B5d226Fc8635A4a6FB6Fde09719F",
     "create": true,
     "testnet": true
   },

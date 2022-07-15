@@ -12,17 +12,15 @@ type NetworkType = {
   iconUrls?: Array<string>;
   nativeCurrency: { name: string; symbol: string; decimals: number };
   blockExplorerUrls: Array<string>;
-  subgraph?: {
-    url?: string;
-    startBlock?: number;
-    active?: boolean;
-  };
+  subgraph?: { url?: string; startBlock?: number; active?: boolean };
+  alchemy?: { url?: string; active: boolean };
   covalent?: { active: boolean };
   mainnet?: boolean;
   testnet?: boolean;
   create?: boolean;
   admin?: string;
   openSea?: { assets?: string; openNFTs?: string };
+  openMulti?: string;
   defaultOpenNFTs?: string;
   nftsFactory?: string;
   nftsFactoryV2?: string;
@@ -54,12 +52,35 @@ type CollectionSupports = {
   IERC721Enumerable?: boolean;
   IERC1155MetadataURI?: boolean;
   IERC173?: boolean;
+  IOpenMulti?: boolean;
   IOpenNFTs?: boolean;
   IOpenNFTsV0?: boolean;
   IOpenNFTsV1?: boolean;
   IOpenNFTsV2?: boolean;
   IOpenNFTsV3?: boolean;
 };
+
+///////////////////////////////////////////////////
+// Exclusives storage parameters for Ipfs | Swarm
+///////////////////////////////////////////////////
+type Without<T> = { [P in keyof T]?: undefined };
+type XOR<T, U> = (Without<T> & U) | (Without<U> & T);
+
+////////
+type ipfsType = {
+  ipfs?: string;
+  ipfsJson?: string;
+};
+
+type swarmType = {
+  swarm?: string;
+  swarmJson?: string;
+};
+
+////////
+type storageType = XOR<ipfsType, swarmType>;
+
+///////////////////////////////////////////////////
 
 type NftMetadata = {
   name?: string;
@@ -69,8 +90,8 @@ type NftMetadata = {
   owner?: string;
   image?: string;
   image_url?: string;
-  ipfs?: string;
-};
+  animation_url?: string;
+} & storageType;
 
 type NftType = {
   chainId: number;
@@ -92,14 +113,12 @@ type NftType = {
   youtube_url?: string;
   background_color?: string;
   attributes?: unknown;
-  ipfs?: string;
-  ipfsJson?: string;
   origin?: string;
   creator?: string;
   minter?: string;
   nid?: string;
   contentType?: string;
-};
+} & storageType;
 
 export type {
   NftType,

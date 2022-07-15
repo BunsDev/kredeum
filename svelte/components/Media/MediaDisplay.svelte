@@ -4,16 +4,13 @@
 
   import MediaDisplayImage from "./MediaDisplayImage.svelte";
   import MediaDisplayVideo from "./MediaDisplayVideo.svelte";
+  import MediaDisplayAudio from "./MediaDisplayAudio.svelte";
 
   /////////////////////////////////////////////////
-  //  <MediaDisplay {nft} {index} {displayMode}? {small}? {alt}? />
+  //  <MediaDisplay {nft} {displayMode}? {small}? {alt}? />
   // Display a media according to its type and entering parameters
   /////////////////////////////////////////////////
   export let nft: NftType;
-
-  // export let mediaSrc: string;
-  export let index: number;
-  // export let mediaType: string;
   export let displayMode: string = "list";
   export let small: boolean = true;
   export let alt: string = nft.name || "media";
@@ -29,17 +26,33 @@
   $: nft && handleChange();
   const handleChange = (): void => {
     const mediaContentType = nft.contentType?.split("/");
-    mediaType = mediaContentType[0];
+    mediaType = mediaContentType?.[0];
+    if (mediaType === "text") mediaType = "image";
     // mediaSubtype = mediaContentType[1];
     mediaSrc = nftGetImageLink(nft);
     alt = mediaType;
   };
 </script>
 
-<div id="media-{cssSmall}-{index}" class="media {cssMedia} media-{mediaType}{gridScale}">
-  {#if "image" === mediaType}
+<div id="media-{cssSmall}-{nft?.tokenID}" class="media {cssMedia} media-{mediaType}{gridScale}">
+  {#if nft?.animation_url}
+    <MediaDisplayAudio
+      {mediaSrc}
+      animation_url={nft?.animation_url}
+      {displayMode}
+      {alt}
+      tokenID={nft.tokenID}
+      {small}
+    />
+  {:else if "image" === mediaType}
     <MediaDisplayImage {mediaSrc} {alt} />
   {:else if "video" === mediaType}
-    <MediaDisplayVideo {mediaSrc} {displayMode} {index} {small} />
+    <MediaDisplayVideo {mediaSrc} {displayMode} tokenID={nft.tokenID} {small} />
   {/if}
 </div>
+
+<style>
+  .media {
+    width: 100%;
+  }
+</style>

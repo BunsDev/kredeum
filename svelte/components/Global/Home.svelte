@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { factoryGetAddress } from "lib/kfactory-get";
-  import { getCreate } from "lib/kconfig";
+  import { getNftsFactory, getCreate, config } from "lib/kconfig";
 
   import AccountConnect from "../Account/AccountConnect.svelte";
   import NetworkList from "../Network/NetworkList.svelte";
@@ -19,6 +18,8 @@
 
   // import { metamaskProvider } from "main/metamask";
 
+  // export let storage: string = "swarm";
+  export let storage: string = config.storage;
   export let platform: string = "dapp";
 
   let chainId: number;
@@ -37,7 +38,7 @@
     <Title />
 
     {#if account && getCreate(chainId)}
-      <Create {chainId} />
+      <Create {chainId} {storage} />
     {/if}
 
     <!-- <BreadCrumb display={true} /> -->
@@ -53,7 +54,7 @@
       {#if chainId && account}
         <CollectionList {chainId} {account} bind:address />
 
-        {#if account && address && factoryGetAddress(chainId)}
+        {#if account && address && getNftsFactory(chainId)}
           <!-- Refresh button -->
           <NftsListRefresh {refreshing} bind:refresh />
         {/if}

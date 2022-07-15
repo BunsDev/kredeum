@@ -3,7 +3,7 @@ import type { Address, NetworkType, CollectionType, NftType } from "./ktypes";
 
 import { Fragment, Interface } from "@ethersproject/abi";
 import { providers, utils, BigNumber } from "ethers";
-import { factoryGetAddress, factoryGetTemplateAddress } from "./kfactory-get";
+import { factoryGetTemplateAddress } from "./kfactory-get";
 import networks from "../config/networks.json";
 import config from "../config/config.json";
 
@@ -32,6 +32,27 @@ const getChainId = (chainName: string): number | undefined =>
 
 const getNetwork = (chainId: number | string): NetworkType | undefined => networksMap.get(Number(chainId));
 
+//  GET nftsFactory address
+const getNftsFactory = (chainId: number): string => getNetwork(chainId)?.nftsFactoryV2 || "";
+
+//  GET default OpenNFTs address
+const getDefaultOpenNFTs = (chainId: number): string => getNetwork(chainId)?.defaultOpenNFTs || "";
+
+//  GET OpenMulti address
+const getOpenMulti = (chainId: number): string => getNetwork(chainId)?.openMulti || "";
+
+// GET explorer
+const getExplorer = (chainId: number): string => getNetwork(chainId)?.blockExplorerUrls[0] || "";
+
+// GET OpenSeaKredeum
+const getOpenSeaKredeum = (chainId: number): string => getNetwork(chainId)?.openSea?.openNFTs || "";
+
+// GET OpenSea
+const getOpenSeaAssets = (chainId: number): string => getNetwork(chainId)?.openSea?.assets || "";
+
+// GET Create
+const getCreate = (chainId: number): boolean => Boolean(getNetwork(chainId)?.create);
+
 const isTestnet = (chainId: number | string): boolean => Boolean(getNetwork(chainId)?.testnet);
 
 const getEnsName = async (address: string): Promise<string> => {
@@ -47,26 +68,18 @@ const getEnsName = async (address: string): Promise<string> => {
   return name || address || "";
 };
 
+const getCovalent = (chainId: number): boolean => Boolean(getNetwork(chainId)?.covalent?.active);
+const getAlchemy = (chainId: number): boolean => Boolean(getNetwork(chainId)?.alchemy?.active);
+const getSubgraph = (chainId: number): boolean => Boolean(getNetwork(chainId)?.subgraph?.active);
+
 const getSubgraphUrl = (chainId: number): string =>
   (getNetwork(chainId)?.subgraph?.active && getNetwork(chainId)?.subgraph?.url) || "";
-
-const getCovalent = (chainId: number): boolean => Boolean(getNetwork(chainId)?.covalent?.active);
+const getAlchemyUrl = (chainId: number): string =>
+  (getNetwork(chainId)?.alchemy?.active && getNetwork(chainId)?.alchemy?.url) || "";
 
 // GET chain Name
 const getChainName = (chainId: number): string =>
   chainId > 0 ? getNetwork(chainId)?.chainName || String(chainId) : "";
-
-// GET explorer
-const getExplorer = (chainId: number): string => getNetwork(chainId)?.blockExplorerUrls[0] || "";
-
-// GET OpenSeaKredeum
-const getOpenSeaKredeum = (chainId: number): string => getNetwork(chainId)?.openSea?.openNFTs || "";
-
-// GET OpenSea
-const getOpenSeaAssets = (chainId: number): string => getNetwork(chainId)?.openSea?.assets || "";
-
-// GET Create
-const getCreate = (chainId: number): boolean => Boolean(getNetwork(chainId)?.create);
 
 // nfts url : nfts://chainName/collectionAddress
 const collectionUrl = (chainId: number, _collectionAddress: Address): string => {
@@ -110,7 +123,8 @@ const normalizedSoloNftUrl = (chainId: number, nft: NftType): string => {
 };
 
 // CONSTANT
-const ipfsGateway = "https://ipfs.io/ipfs/";
+const IPFS_GATEWAY = config.ipfsGateway;
+const SWARM_GATEWAY = config.swarmGateway;
 
 const textShort = (s: string, n = 16, p = n): string => {
   const ipfsStr: string = s?.toString() || "";
@@ -175,7 +189,7 @@ const ipfsGetLink = (uri: string | undefined): string => {
 // ipfs uri : ipfs://bafkreieivwe2vhxx72iqbjibxabk5net4ah5lo3khekt6ojyn7cucek624
 // => gateway url : https://ipfs.io/ipfs/bafkreieivwe2vhxx72iqbjibxabk5net4ah5lo3khekt6ojyn7cucek624
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-const ipfsToUrlHttp = (url: string): string => (url.startsWith("ipfs://") ? ipfsGatewayUrl(url) : url);
+const ipfsLinkToUrlHttp = (link: string): string => (link.startsWith("ipfs://") ? ipfsGatewayUrl(link) : link);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // cid : bafkreieivwe2vhxx72iqbjibxabk5net4ah5lo3khekt6ojyn7cucek624
@@ -194,7 +208,7 @@ const ipfsLinkToCid = (ipfs: string): string => ipfs.replace(/^ipfs:\/\//, "");
 // => bafkreieivwe2vhxx72iqbjibxabk5net4ah5lo3khekt6ojyn7cucek624
 // => gateway url https://ipfs.io/ipfs/bafkreieivwe2vhxx72iqbjibxabk5net4ah5lo3khekt6ojyn7cucek624
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-const ipfsGatewayUrl = (ipfs: string): string => `${ipfsGateway}${ipfsLinkToCid(ipfs)}`;
+const ipfsGatewayUrl = (ipfs: string | undefined): string => (ipfs ? `${IPFS_GATEWAY}${ipfsLinkToCid(ipfs)}` : "");
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // ipfs uri : ipfs://bafkreieivwe2vhxx72iqbjibxabk5net4ah5lo3khekt6ojyn7cucek624
@@ -202,6 +216,89 @@ const ipfsGatewayUrl = (ipfs: string): string => `${ipfsGateway}${ipfsLinkToCid(
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 const ipfsGatewayLink = (ipfs: string): string => urlToLink(ipfsGatewayUrl(ipfs), textShort(ipfs));
 /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// SWARM HELPERS
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// uri : https://api.gateway.ethswarm.org/bzz/1fa18cf1aaee4727ecc266a86f1ef0f98b14771c7814d8cfb850a4b1c6d1359f
+// => Swarm uri : swarm://1fa18cf1aaee4727ecc266a86f1ef0f98b14771c7814d8cfb850a4b1c6d1359f
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+const swarmGetLink = (uri: string | undefined): string => {
+  if (!uri) return "";
+
+  let swarmLink = "";
+  let cid = "";
+
+  if (uri.startsWith("swarm://")) {
+    swarmLink = uri;
+  } else if (uri.startsWith(SWARM_GATEWAY)) {
+    // find cid in uri
+    cid = uri.replace(SWARM_GATEWAY, "");
+
+    // console.log("ipfsGetLink ~ uri res cid", uri, res, cid);
+  }
+  if (cid) {
+    // reconstruct ipfs uri
+    swarmLink = swarmCidToLink(cid);
+  }
+
+  return swarmLink;
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// http link : https://api.gateway.ethswarm.org/bzz/1fa18cf1aaee4727ecc266a86f1ef0f98b14771c7814d8cfb850a4b1c6d1359f
+// swarm uri : swarm://1fa18cf1aaee4727ecc266a86f1ef0f98b14771c7814d8cfb850a4b1c6d1359f
+// => gateway url : https://api.gateway.ethswarm.org/bzz/1fa18cf1aaee4727ecc266a86f1ef0f98b14771c7814d8cfb850a4b1c6d1359f
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const swarmLinkToUrlHttp = (link: string): string => (link.startsWith("swarm://") ? swarmGatewayUrl(link) : link);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// cid : 1fa18cf1aaee4727ecc266a86f1ef0f98b14771c7814d8cfb850a4b1c6d1359f
+// => swarm uri : swarm://1fa18cf1aaee4727ecc266a86f1ef0f98b14771c7814d8cfb850a4b1c6d1359f
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+const swarmCidToLink = (cid: string): string => (cid ? `swarm://${cid}` : "");
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// swarm uri : swarm://1fa18cf1aaee4727ecc266a86f1ef0f98b14771c7814d8cfb850a4b1c6d1359f
+// => cid : 1fa18cf1aaee4727ecc266a86f1ef0f98b14771c7814d8cfb850a4b1c6d1359f
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const swarmLinkToCid = (swarm: string): string => swarm.replace(/^swarm:\/\//, "");
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Swarm reference : 1fa18cf1aaee4727ecc266a86f1ef0f98b14771c7814d8cfb850a4b1c6d1359f
+// => gateway url https://api.gateway.ethswarm.org/bzz/1fa18cf1aaee4727ecc266a86f1ef0f98b14771c7814d8cfb850a4b1c6d1359f
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const swarmGatewayUrl = (swarm: string | undefined): string =>
+  swarm ? `${SWARM_GATEWAY}${swarmLinkToCid(swarm)}` : "";
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Swarm API Gateway : https://api.gateway.ethswarm.org/bzz/
+// => Swarm serveur node Url https://api.gateway.ethswarm.org
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const swarmServer = (swarmGateway: string): string => swarmGateway.replace(/\/bzz\/$/, "");
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Storage cid from ipfs or swarm
+// => gataway url of ipfs or swarm
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const storageGatewayUrl = (link: string): string =>
+  link.startsWith("ipfs://") ? ipfsGatewayUrl(link) : link.startsWith("swarm://") ? swarmGatewayUrl(link) : link;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ipfs or swarm ( uri | http uri )
+// => gateway url for ipfs or swarm
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const storageLinkToUrlHttp = (link: string): string =>
+  link.startsWith("ipfs://") || link.startsWith(IPFS_GATEWAY)
+    ? ipfsLinkToUrlHttp(link)
+    : link.startsWith("swarm://") || link.startsWith(SWARM_GATEWAY)
+      ? swarmLinkToUrlHttp(link)
+      : link;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // EXPLORER URL helpers
@@ -231,7 +328,7 @@ const explorerTxUrl = (chainId: number, tx: string): string =>
 const explorerNFTsFactoryUrl = (chainId: number): string =>
   // https://blockscout.com/xdai/mainnet/address/0x86246ba8F7b25B1650BaF926E42B66Ec18D96000/read-contract
   // https://etherscan.io/address/0x4b7992F03906F7bBE3d48E5Fb724f52c56cFb039#readContract
-  explorerContractUrl(chainId, factoryGetAddress(chainId));
+  explorerContractUrl(chainId, getNftsFactory(chainId));
 
 // OPEN_NFTS URL
 const explorerOpenNFTsUrl = async (chainId: number, provider: Provider): Promise<string> =>
@@ -276,11 +373,11 @@ const explorerContractUrl = (chainId: number, address: string): string => {
 const explorerCollectionUrl = (chainId: number, collAddress = ""): string => {
   let url = "";
   if (getExplorer(chainId)?.includes("chainstacklabs.com") || getExplorer(chainId)?.includes("blockscout.com")) {
-    // https://blockscout.com/xdai/mainnet/token/0x74e596525C63393f42C76987b6A66F4e52733efa/inventory
-    url = explorerUrl(chainId, `/token/${collAddress}/inventory`);
+    // https://blockscout.com/xdai/mainnet/token/0x74e596525C63393f42C76987b6A66F4e52733efa
+    url = explorerUrl(chainId, `/token/${collAddress}`);
   } else {
-    // https://etherscan.io/token/0x82a398243ebc2cb26a4a21b9427ec6db8c224471#inventory
-    url = explorerUrl(chainId, `/token/${collAddress}#inventory`);
+    // https://etherscan.io/token/0x82a398243ebc2cb26a4a21b9427ec6db8c224471
+    url = explorerUrl(chainId, `/token/${collAddress}`);
   }
   return url;
 };
@@ -298,7 +395,7 @@ const explorerNftUrl = (chainId: number, nft: NftType): string => {
     url = explorerUrl(chainId, `/token/${nft?.address}/instance/${nft?.tokenID}/metadata`);
   } else {
     // https://etherscan.io/token/0x82a398243EBc2CB26a4A21B9427EC6Db8c224471?a=1
-    url = explorerUrl(chainId, `/token/${nft?.address}?a=${nft?.tokenID}#inventory`);
+    url = explorerUrl(chainId, `/token/${nft?.address}?a=${nft?.tokenID}`);
   }
   return url;
 };
@@ -408,19 +505,33 @@ export {
   getShortAddress,
   getChecksumAddress,
   getNetwork,
+  getNftsFactory,
+  getDefaultOpenNFTs,
+  getOpenMulti,
   getEnsName,
+  getSubgraph,
   getSubgraphUrl,
   getOpenSeaKredeum,
   getOpenSeaAssets,
   getCreate,
+  getAlchemy,
+  getAlchemyUrl,
   getCovalent,
   getExplorer,
-  ipfsToUrlHttp,
+  ipfsLinkToUrlHttp,
   ipfsCidToLink,
   ipfsLinkToCid,
   ipfsGetLink,
   ipfsGatewayUrl,
   ipfsGatewayLink,
+  swarmGetLink,
+  swarmLinkToUrlHttp,
+  swarmCidToLink,
+  swarmLinkToCid,
+  swarmGatewayUrl,
+  swarmServer,
+  storageGatewayUrl,
+  storageLinkToUrlHttp,
   interfaceId,
   collectionKey,
   collectionListKey,
@@ -444,5 +555,6 @@ export {
   urlToLink,
   config,
   DEFAULT_NAME,
-  DEFAULT_SYMBOL
+  DEFAULT_SYMBOL,
+  SWARM_GATEWAY
 };

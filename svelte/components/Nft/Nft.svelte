@@ -14,10 +14,12 @@
   import MediaPreview from "../Media/MediaPreview.svelte";
 
   import { shortcode } from "helpers/shortcodes";
-
   import { nftStore } from "stores/nft/nft";
 
   import NftTransfer from "./NftTransfer.svelte";
+  import NftClaim from "./NftClaim.svelte";
+
+  import { metamaskChainId } from "main/metamask";
 
   /////////////////////////////////////////////////
   //  <Nft {chainId} {address} {tokenID} {account}? {platform}? />
@@ -27,34 +29,31 @@
   export let address: string;
   export let tokenID: string;
   export let account: string = undefined;
-  export let platform: string = "dapp";
+  export let platform: string = undefined;
+
   let nft: Readable<NftType>;
 
   // let i = 1;
   // HANDLE CHANGE : on truthy chainId and address, and whatever account
-  $: account, chainId && address && tokenID && handleChange();
-  const handleChange = (): void => {
+  $: account, chainId && address && tokenID && $metamaskChainId && handleChange();
+  const handleChange = async (): Promise<void> => {
     // console.log(`NFTDETAIL CHANGE #${i++} ${nftKey(chainId, address, tokenID)}`);
 
     // STATE VIEW : sync get Nft
     nft = nftStore.getOneStore(chainId, address, tokenID);
 
     // ACTION : async refresh Nft
-    nftStore.refreshOne(chainId, address, tokenID).catch(console.error);
+    await nftStore.refreshOne(chainId, address, tokenID).catch(console.error);
   };
 
   $: console.log("Nft", $nft);
 </script>
 
 {#if $nft}
-  <h2 class="m-b-20 return">
-    <i class="fa fa-arrow-left fa-left" /><span data-back="backtocoll" class="link">Return to collection</span>
-  </h2>
-
-  <div class="row">
+  <div class="row krd-nft-solo">
     <div class="col col-xs-12 col-sm-4 col-md-3">
       <div class="card-krd">
-        <MediaPreview nft={$nft} index={Number(tokenID)} />
+        <MediaPreview nft={$nft} />
       </div>
     </div>
 
@@ -68,7 +67,7 @@
         <ul class="steps">
           <li>
             <div class="flex"><span class="label"><strong>Token ID</strong></span></div>
-            <div class="flex"><strong>#{tokenID}</strong></div>
+            <div class="flex overflow-ellipsis" title="Token ID #{tokenID}"><strong>#{tokenID}</strong></div>
           </li>
           <li>
             <div class="flex"><span class="label">Owner</span></div>
@@ -101,18 +100,22 @@
             </div>
           </li>
           <li>
-            <div class="flex"><span class="label">Metadata ipfs</span></div>
+            <div class="flex"><span class="label">Metadata</span></div>
             <div class="flex">
-              <a class="link overflow-ellipsis" href={$nft.tokenURI} title={$nft.ipfsJson} target="_blank"
-                >{$nft.ipfsJson}</a
-              >
+              {#if $nft.tokenURI}
+                <a class="link overflow-ellipsis" href={$nft.tokenURI} title={$nft.ipfsJson} target="_blank"
+                  >{$nft.tokenURI}</a
+                >
+              {:else}
+                NO metadata
+              {/if}
             </div>
           </li>
           <li>
             <div class="flex"><span class="label">Image</span></div>
             <div class="flex">
               <a class="link overflow-ellipsis" href={$nft.image} title={$nft.ipfs} target="_blank">
-                {$nft.ipfs}
+                {$nft.image || ""}
               </a>
             </div>
           </li>
@@ -127,6 +130,10 @@
           <a href="#transfert-nft-{tokenID}" class="btn btn-small btn-outline" title="Make a gift"
             ><i class="fa fa-gift" /> Transfer</a
           >
+
+          <!-- <a href="#claim-nft-{tokenID}" class="btn btn-small btn-default" title="Claim NFT on antoher network">
+            <i class="fas fa-exclamation" /> Claim</a
+          > -->
 
           {#if getNetwork(chainId)?.openSea}
             {#if addressSame($nft.owner, account)}
@@ -164,25 +171,24 @@
               >
             </div>
           </li>
-          <!-- <li>
-            <div class="flex"><span class="label">Sell direclty on Gamestop</span></div>
-            <div class="flex"><a class="btn btn-small btn-outline" href="." title="Copy">Copy</a></div>
-          </li>
-          <li>
-            <div class="flex"><span class="label">Mint on your front page</span></div>
-            <div class="flex"><a class="btn btn-small btn-outline" href="." title="Copy">Copy</a></div>
-          </li>
-          <li>
-            <div class="flex"><span class="label">Sell directly without market-places</span></div>
-            <div class="flex"><a class="btn btn-small btn-outline" href="." title="Copy">Copy</a></div>
-          </li> -->
         </ul>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal gift -->
-<div id="transfert-nft-{$nft.tokenID}" class="modal-window">
+<!-- Modal transfer nft -->
+<div id="transfert-nft-{tokenID}" class="modal-window">
   <NftTransfer {chainId} {address} {tokenID} />
 </div>
+
+<!-- Modal claim nft -->
+<div id="claim-nft-{tokenID}" class="modal-window">
+  <NftClaim {chainId} {address} {tokenID} />
+</div>
+
+<style>
+  .krd-nft-solo {
+    width: 100%;
+  }
+</style>
